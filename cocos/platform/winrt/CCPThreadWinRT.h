@@ -1,6 +1,7 @@
 /****************************************************************************
 Copyright (c) 2010 cocos2d-x.org
 Copyright (c) Microsoft Open Technologies, Inc.
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
 http://www.cocos2d-x.org
 
@@ -27,12 +28,15 @@ THE SOFTWARE.
 #define __CCPTHREADWINRT_H__
 
 
-#include "base/CCPlatformConfig.h"
+#include "platform/CCPlatformConfig.h"
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WINRT)
 
-#include "base/CCPlatformMacros.h"
-
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
 #include <Windows.h>
+#include "platform/CCPlatformMacros.h"
+
 
 NS_CC_BEGIN
 

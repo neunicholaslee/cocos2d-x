@@ -1,5 +1,36 @@
+/****************************************************************************
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
+ 
+ http://www.cocos2d-x.org
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ 
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE.
+ ****************************************************************************/
+
 #include "RotateWorldTest.h"
 #include "../testResource.h"
+
+USING_NS_CC;
+
+RotateWorldTests::RotateWorldTests()
+{
+    ADD_TEST_CASE(RotateWorldTest);
+}
 
 //------------------------------------------------------------------
 //
@@ -67,11 +98,11 @@ void SpriteLayer::onEnter()
     auto rot1 = RotateBy::create(4, 360*2);
     auto rot2 = rot1->reverse();
     
-    spriteSister1->runAction(Repeat::create( Sequence::create(jump2, jump1, NULL), 5 ));
-    spriteSister2->runAction(Repeat::create( Sequence::create(jump1->clone(), jump2->clone(), NULL), 5 ));
+    spriteSister1->runAction(Repeat::create( Sequence::create(jump2, jump1, nullptr), 5 ));
+    spriteSister2->runAction(Repeat::create( Sequence::create(jump1->clone(), jump2->clone(), nullptr), 5 ));
     
-    spriteSister1->runAction(Repeat::create( Sequence::create(rot1, rot2, NULL), 5 ));
-    spriteSister2->runAction(Repeat::create( Sequence::create(rot2->clone(), rot1->clone(), NULL), 5 ));
+    spriteSister1->runAction(Repeat::create( Sequence::create(rot1, rot2, nullptr), 5 ));
+    spriteSister2->runAction(Repeat::create( Sequence::create(rot2->clone(), rot1->clone(), nullptr), 5 ));
 }
 
 //------------------------------------------------------------------
@@ -108,7 +139,7 @@ void RotateWorldMainLayer::onEnter()
 
     white->setScale(0.5f);
     white->setPosition(Vec2(x/4,y/4));
-    white->ignoreAnchorPointForPosition(false);
+    white->setIgnoreAnchorPointForPosition(false);
     white->setPosition(Vec2(x/4*3,y/4*3));
 
     addChild(blue, -1);
@@ -124,13 +155,17 @@ void RotateWorldMainLayer::onEnter()
     white->runAction(rot->clone());
 }
 
-void RotateWorldTestScene::runThisTest()
+bool RotateWorldTest::init()
 {
-    auto layer = RotateWorldMainLayer::create();
+    if (TestCase::init())
+    {
+        auto layer = RotateWorldMainLayer::create();
 
-    addChild(layer);
-    runAction( RotateBy::create(4, -360) );
+        addChild(layer);
+        runAction(RotateBy::create(4, -360));
 
-    Director::getInstance()->replaceScene(this);
+        return true;
+    }
 
+    return false;
 }

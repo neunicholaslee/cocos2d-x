@@ -8,6 +8,8 @@
  * Modified by Yannick Loriot.
  * http://yannickloriot.com
  * 
+ * Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
+ * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -86,9 +88,9 @@ bool ControlColourPicker::init()
         float hueShift                = 8;
         float colourShift             = 28;
         
-        _huePicker = new ControlHuePicker();
+        _huePicker = new (std::nothrow) ControlHuePicker();
         _huePicker->initWithTargetAndPos(spriteSheet, Vec2(backgroundPointZero.x + hueShift, backgroundPointZero.y + hueShift));
-        _colourPicker = new ControlSaturationBrightnessPicker();
+        _colourPicker = new (std::nothrow) ControlSaturationBrightnessPicker();
         _colourPicker->initWithTargetAndPos(spriteSheet, Vec2(backgroundPointZero.x + colourShift, backgroundPointZero.y + colourShift));
         
         // Setup events
@@ -110,7 +112,7 @@ bool ControlColourPicker::init()
 
 ControlColourPicker* ControlColourPicker::create()
 {
-    ControlColourPicker *pRet = new ControlColourPicker();
+    ControlColourPicker *pRet = new (std::nothrow) ControlColourPicker();
     pRet->init();
     pRet->autorelease();
     return pRet;
@@ -119,7 +121,7 @@ ControlColourPicker* ControlColourPicker::create()
 
 void ControlColourPicker::setColor(const Color3B& color)
 {
-    // XXX fixed me if not correct
+    // FIXME: fixed me if not correct
     Control::setColor(color);
     
     RGBA rgba;
@@ -135,7 +137,7 @@ void ControlColourPicker::setColor(const Color3B& color)
 void ControlColourPicker::setEnabled(bool enabled)
 {
     Control::setEnabled(enabled);
-    if (_huePicker != NULL)
+    if (_huePicker != nullptr)
     {
         _huePicker->setEnabled(enabled);
     }
@@ -161,13 +163,13 @@ void ControlColourPicker::updateHueAndControlPicker()
 }
 
 
-void ControlColourPicker::hueSliderValueChanged(Ref * sender, Control::EventType controlEvent)
+void ControlColourPicker::hueSliderValueChanged(Ref * sender, Control::EventType /*controlEvent*/)
 {
     _hsv.h      = ((ControlHuePicker*)sender)->getHue();
 
     // Update the value
     RGBA rgb    = ControlUtils::RGBfromHSV(_hsv);
-    // XXX fixed me if not correct
+    // FIXME: fixed me if not correct
     Control::setColor(Color3B((GLubyte)(rgb.r * 255.0f), (GLubyte)(rgb.g * 255.0f), (GLubyte)(rgb.b * 255.0f)));
     
     // Send Control callback
@@ -175,7 +177,7 @@ void ControlColourPicker::hueSliderValueChanged(Ref * sender, Control::EventType
     updateControlPicker();
 }
 
-void ControlColourPicker::colourSliderValueChanged(Ref * sender, Control::EventType controlEvent)
+void ControlColourPicker::colourSliderValueChanged(Ref * sender, Control::EventType /*controlEvent*/)
 {
     _hsv.s=((ControlSaturationBrightnessPicker*)sender)->getSaturation();
     _hsv.v=((ControlSaturationBrightnessPicker*)sender)->getBrightness();
@@ -183,7 +185,7 @@ void ControlColourPicker::colourSliderValueChanged(Ref * sender, Control::EventT
 
      // Update the value
     RGBA rgb    = ControlUtils::RGBfromHSV(_hsv);
-    // XXX fixed me if not correct
+    // FIXME: fixed me if not correct
     Control::setColor(Color3B((GLubyte)(rgb.r * 255.0f), (GLubyte)(rgb.g * 255.0f), (GLubyte)(rgb.b * 255.0f)));
     
     // Send Control callback
@@ -191,7 +193,7 @@ void ControlColourPicker::colourSliderValueChanged(Ref * sender, Control::EventT
 }
 
 //ignore all touches, handled by children
-bool ControlColourPicker::onTouchBegan(Touch* touch, Event* pEvent)
+bool ControlColourPicker::onTouchBegan(Touch* /*touch*/, Event* /*pEvent*/)
 {
     return false;
 }

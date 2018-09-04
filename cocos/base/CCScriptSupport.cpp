@@ -1,6 +1,7 @@
 /****************************************************************************
  Copyright (c) 2010-2012 cocos2d-x.org
- Copyright (c) 2013-2014 Chukong Technologies Inc.
+ Copyright (c) 2013-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -28,6 +29,7 @@
 #if CC_ENABLE_SCRIPT_BINDING
 
 #include "base/CCScheduler.h"
+#include "2d/CCNode.h"
 
 bool CC_DLL cc_assert_script_compatible(const char *msg)
 {
@@ -46,7 +48,7 @@ NS_CC_BEGIN
 
 ScriptHandlerEntry* ScriptHandlerEntry::create(int handler)
 {
-    ScriptHandlerEntry* entry = new ScriptHandlerEntry(handler);
+    ScriptHandlerEntry* entry = new (std::nothrow) ScriptHandlerEntry(handler);
     entry->autorelease();
     return entry;
 }
@@ -66,7 +68,7 @@ ScriptHandlerEntry::~ScriptHandlerEntry(void)
 
 SchedulerScriptHandlerEntry* SchedulerScriptHandlerEntry::create(int handler, float interval, bool paused)
 {
-    SchedulerScriptHandlerEntry* entry = new SchedulerScriptHandlerEntry(handler);
+    SchedulerScriptHandlerEntry* entry = new (std::nothrow) SchedulerScriptHandlerEntry(handler);
     entry->init(interval, paused);
     entry->autorelease();
     return entry;
@@ -74,7 +76,7 @@ SchedulerScriptHandlerEntry* SchedulerScriptHandlerEntry::create(int handler, fl
 
 bool SchedulerScriptHandlerEntry::init(float interval, bool paused)
 {
-    _timer = new TimerScriptHandler();
+    _timer = new (std::nothrow) TimerScriptHandler();
     _timer->initWithScriptHandler(_handler, interval);
     _paused = paused;
     LUALOG("[LUA] ADD script schedule: %d, entryID: %d", _handler, _entryId);
@@ -96,7 +98,7 @@ TouchScriptHandlerEntry* TouchScriptHandlerEntry::create(int handler,
                                                              int priority,
                                                              bool swallowsTouches)
 {
-    TouchScriptHandlerEntry* entry = new TouchScriptHandlerEntry(handler);
+    TouchScriptHandlerEntry* entry = new (std::nothrow) TouchScriptHandlerEntry(handler);
     entry->init(isMultiTouches, priority, swallowsTouches);
     entry->autorelease();
     return entry;
@@ -148,7 +150,7 @@ ScriptEngineManager* ScriptEngineManager::getInstance()
 {
     if (!s_pSharedScriptEngineManager)
     {
-        s_pSharedScriptEngineManager = new ScriptEngineManager();
+        s_pSharedScriptEngineManager = new (std::nothrow) ScriptEngineManager();
     }
     return s_pSharedScriptEngineManager;
 }
@@ -160,6 +162,63 @@ void ScriptEngineManager::destroyInstance()
         delete s_pSharedScriptEngineManager;
         s_pSharedScriptEngineManager = nullptr;
     }
+}
+
+bool ScriptEngineManager::sendActionEventToJS(Action* actionObject, int eventType, void* param)
+{
+    auto scriptEngine = getInstance()->getScriptEngine();
+    
+    ActionObjectScriptData data(actionObject,(int*)&eventType, param);
+    ScriptEvent scriptEvent(kScriptActionEvent,(void*)&data);
+    if (scriptEngine->sendEvent(&scriptEvent))
+        return true;
+    
+    return false;
+}
+
+bool ScriptEngineManager::sendNodeEventToJS(Node* node, int action)
+{
+    auto scriptEngine = getInstance()->getScriptEngine();
+    
+    if (scriptEngine->isCalledFromScript())
+    {
+        // Should only be invoked at root class Node
+        scriptEngine->setCalledFromScript(false);
+    }
+    else
+    {
+        BasicScriptData data(node,(void*)&action);
+        ScriptEvent scriptEvent(kNodeEvent,(void*)&data);
+        if (scriptEngine->sendEvent(&scriptEvent))
+            return true;
+    }
+    
+    return false;
+}
+
+bool ScriptEngineManager::sendNodeEventToJSExtended(Node* node, int action)
+{
+    auto scriptEngine = getInstance()->getScriptEngine();
+    
+    if (!scriptEngine->isCalledFromScript())
+    {
+        BasicScriptData data(node,(void*)&action);
+        ScriptEvent scriptEvent(kNodeEvent,(void*)&data);
+        if (scriptEngine->sendEvent(&scriptEvent))
+            return true;
+    }
+    
+    return false;
+}
+
+void ScriptEngineManager::sendNodeEventToLua(Node* node, int action)
+{
+    auto scriptEngine = getInstance()->getScriptEngine();
+    
+    BasicScriptData data(node,(void*)&action);
+    ScriptEvent scriptEvent(kNodeEvent,(void*)&data);
+    
+    scriptEngine->sendEvent(&scriptEvent);
 }
 
 NS_CC_END

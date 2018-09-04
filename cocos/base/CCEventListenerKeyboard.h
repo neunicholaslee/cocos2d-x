@@ -1,5 +1,6 @@
 /****************************************************************************
- Copyright (c) 2013-2014 Chukong Technologies Inc.
+ Copyright (c) 2013-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -29,15 +30,28 @@
 #include "base/CCEventListener.h"
 #include "base/CCEventKeyboard.h"
 
+/**
+ * @addtogroup base
+ * @{
+ */
+
 NS_CC_BEGIN
 
 class Event;
 
-class EventListenerKeyboard : public EventListener
+/** @class EventListenerKeyboard
+ * @brief Keyboard event listener.
+ * @js cc._EventListenerKeyboard
+ */
+class CC_DLL EventListenerKeyboard : public EventListener
 {
 public:
     static const std::string LISTENER_ID;
     
+    /** Create a keyboard event listener.
+     * 
+     * @return An autoreleased EventListenerKeyboard object.
+     */
     static EventListenerKeyboard* create();
     
     /// Overrides
@@ -46,11 +60,14 @@ public:
     
     std::function<void(EventKeyboard::KeyCode, Event*)> onKeyPressed;
     std::function<void(EventKeyboard::KeyCode, Event*)> onKeyReleased;
-private:
+CC_CONSTRUCTOR_ACCESS:
     EventListenerKeyboard();
     bool init();
 };
 
 NS_CC_END
+
+// end of base group
+/// @}
 
 #endif /* defined(__cocos2d_libs__CCKeyboardEventListener__) */

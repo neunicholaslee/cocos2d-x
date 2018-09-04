@@ -1,6 +1,7 @@
 /****************************************************************************
 Copyright (c) 2010-2012 cocos2d-x.org
-Copyright (c) 2013-2014 Chukong Technologies Inc.
+Copyright (c) 2013-2016 Chukong Technologies Inc.
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
 http://www.cocos2d-x.org
 
@@ -25,14 +26,9 @@ THE SOFTWARE.
 
 #ifndef __CC_PLATFORM_THREAD_H__
 #define __CC_PLATFORM_THREAD_H__
+/// @cond DO_NOT_SHOW
 
-#include <functional>
-#include <list>
-#include <mutex>
-
-#include "platform/CCCommon.h"
-#include "base/CCPlatformMacros.h"
-#include "base/CCDirector.h"
+#include "platform/CCPlatformMacros.h"
 
 NS_CC_BEGIN
 
@@ -48,7 +44,6 @@ NS_CC_BEGIN
 class CC_DLL ThreadHelper
 {
 public:
-    friend DisplayLinkDirector;
 
     /** Create an autorelease pool for objective-c codes.
      * @js NA
@@ -68,4 +63,5 @@ public:
 
 NS_CC_END
 
+/// @endcond
 #endif    // __CC_PLATFORM_THREAD_H__

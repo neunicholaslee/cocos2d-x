@@ -1,7 +1,37 @@
+/****************************************************************************
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
+ 
+ http://www.cocos2d-x.org
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ 
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE.
+ ****************************************************************************/
+
 #include "UIVideoPlayerTest.h"
 
 USING_NS_CC;
+using namespace cocos2d::ui;
 using namespace cocos2d::experimental::ui;
+
+VideoPlayerTests::VideoPlayerTests()
+{
+    ADD_TEST_CASE(VideoPlayerTest);
+}
 
 bool VideoPlayerTest::init()
 {
@@ -98,7 +128,7 @@ void VideoPlayerTest::menuOnlineVideoCallback(Ref* sender)
 {
     if (_videoPlayer)
     {
-        _videoPlayer->setURL("http://video001.smgbb.cn/gslb/program/FDN/FDN1190949/HLSVodService.m3u8?_mdCode=6065719&_cdnCode=B2B_XL_TEST&_type=0&_rCode=TerOut_18865&_userId=020341000456068&_categoryCode=SMG_HUAYU&_categoryPath=SMG_1002,SMG_HUAYU,&_adPositionId=01001000&_adCategorySource=0&_flag=.m3u8&_enCode=m3u8&taskID=ysh_ps_002-ott_1397459105893_020341000456068&_client=103&_cms=ctv&_CDNToken=76C043FD4969501754DC19E54EC8DC2C");
+        _videoPlayer->setURL("http://benchmark.cocos2d-x.org/cocosvideo.mp4");
         _videoPlayer->play();
     }
 }
@@ -139,7 +169,7 @@ void VideoPlayerTest::createVideo()
 {
     auto centerPos = Vec2(_visibleRect.origin.x + _visibleRect.size.width / 2,_visibleRect.origin.y + _visibleRect.size.height /2);
 
-    auto widgetSize = _widget->getSize();
+    auto widgetSize = _widget->getContentSize();
 
     _videoPlayer = VideoPlayer::create();
     _videoPlayer->setPosition(centerPos);

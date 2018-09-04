@@ -1,5 +1,6 @@
 /****************************************************************************
- Copyright (c) 2013-2014 Chukong Technologies Inc.
+ Copyright (c) 2013-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -28,13 +29,22 @@
 
 #include "base/CCEvent.h"
 
+/**
+ * @addtogroup base
+ * @{
+ */
+
 NS_CC_BEGIN
 
-class EventKeyboard : public Event
+/** @class EventKeyboard
+ * @brief Keyboard event.
+ */
+class CC_DLL EventKeyboard : public Event
 {
 public:
     /**
-     * The key (code).
+     * KeyCode The key (code).
+     * @js NA
      */
     enum class KeyCode
     {
@@ -45,14 +55,21 @@ public:
         KEY_SYSREQ,
         KEY_BREAK,
         KEY_ESCAPE,
+        KEY_BACK = KEY_ESCAPE,
         KEY_BACKSPACE,
         KEY_TAB,
         KEY_BACK_TAB,
         KEY_RETURN,
         KEY_CAPS_LOCK,
         KEY_SHIFT,
+        KEY_LEFT_SHIFT = KEY_SHIFT,
+        KEY_RIGHT_SHIFT,
         KEY_CTRL,
+        KEY_LEFT_CTRL = KEY_CTRL,
+        KEY_RIGHT_CTRL,
         KEY_ALT,
+        KEY_LEFT_ALT = KEY_ALT,
+        KEY_RIGHT_ALT,
         KEY_MENU,
         KEY_HYPER,
         KEY_INSERT,
@@ -200,9 +217,15 @@ public:
         KEY_DPAD_DOWN,
         KEY_DPAD_CENTER,
         KEY_ENTER,
-        KEY_PLAY,
+        KEY_PLAY
     };
     
+    /** Constructor.
+     *
+     * @param keyCode A given keycode.
+     * @param isPressed True if the key is pressed.
+     * @js ctor
+     */
     EventKeyboard(KeyCode keyCode, bool isPressed);
     
 private:
@@ -213,5 +236,8 @@ private:
 };
 
 NS_CC_END
+
+// end of base group
+/// @}
 
 #endif /* defined(__cocos2d_libs__CCKeyboardEvent__) */

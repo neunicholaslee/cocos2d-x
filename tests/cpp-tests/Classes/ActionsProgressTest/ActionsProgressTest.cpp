@@ -1,6 +1,7 @@
 /****************************************************************************
  Copyright (c) 2012 cocos2d-x.org
- Copyright (c) 2013-2014 Chukong Technologies Inc.
+ Copyright (c) 2013-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
  http://www.cocos2d-x.org
 
@@ -26,69 +27,18 @@
 #include "ActionsProgressTest.h"
 #include "../testResource.h"
 
-static int sceneIdx = -1; 
+USING_NS_CC;
 
-#define MAX_LAYER    7
-
-Layer* nextAction();
-Layer* backAction();
-Layer* restartAction();
-
-Layer* createLayer(int nIndex)
+ActionsProgressTests::ActionsProgressTests()
 {
-    switch(nIndex)
-    {
-        case 0: return new SpriteProgressToRadial();
-        case 1: return new SpriteProgressToHorizontal();
-        case 2: return new SpriteProgressToVertical();
-        case 3: return new SpriteProgressToRadialMidpointChanged();
-        case 4: return new SpriteProgressBarVarious();
-        case 5: return new SpriteProgressBarTintAndFade();
-        case 6: return new SpriteProgressWithSpriteFrame();
-    }
-
-    return NULL;
+    ADD_TEST_CASE(SpriteProgressToRadial);
+    ADD_TEST_CASE(SpriteProgressToHorizontal);
+    ADD_TEST_CASE(SpriteProgressToVertical);
+    ADD_TEST_CASE(SpriteProgressToRadialMidpointChanged);
+    ADD_TEST_CASE(SpriteProgressBarVarious);
+    ADD_TEST_CASE(SpriteProgressBarTintAndFade);
+    ADD_TEST_CASE(SpriteProgressWithSpriteFrame);
 }
-
-Layer* nextAction()
-{
-    sceneIdx++;
-    sceneIdx = sceneIdx % MAX_LAYER;
-
-    auto layer = createLayer(sceneIdx);
-    layer->autorelease();
-
-    return layer;
-}
-
-Layer* backAction()
-{
-    sceneIdx--;
-    int total = MAX_LAYER;
-    if( sceneIdx < 0 )
-        sceneIdx += total;    
-    
-    auto layer = createLayer(sceneIdx);
-    layer->autorelease();
-
-    return layer;
-}
-
-Layer* restartAction()
-{
-    auto layer = createLayer(sceneIdx);
-    layer->autorelease();
-
-    return layer;
-} 
-
-
-void ProgressActionsTestScene::runThisTest()
-{
-    addChild(nextAction());
-    Director::getInstance()->replaceScene(this);
-}
-
 
 //------------------------------------------------------------------
 //
@@ -108,43 +58,13 @@ std::string SpriteDemo::title() const
     return "ActionsProgressTest";
 }
 
-std::string SpriteDemo::subtitle() const
-{
-    return "";
-}
-
 void SpriteDemo::onEnter()
 {
-    BaseTest::onEnter();
+    TestCase::onEnter();
 
     auto background = LayerColor::create(Color4B(255,0,0,255));
     addChild(background, -10);
 }
-
-void SpriteDemo::restartCallback(Ref* sender)
-{
-    auto s = new ProgressActionsTestScene();
-    s->addChild(restartAction()); 
-
-    Director::getInstance()->replaceScene(s);
-    s->release();
-}
-
-void SpriteDemo::nextCallback(Ref* sender)
-{
-    auto s = new ProgressActionsTestScene();
-    s->addChild( nextAction() );
-    Director::getInstance()->replaceScene(s);
-    s->release();
-}
-
-void SpriteDemo::backCallback(Ref* sender)
-{
-    auto s = new ProgressActionsTestScene();
-    s->addChild( backAction() );
-    Director::getInstance()->replaceScene(s);
-    s->release();
-} 
 
 //------------------------------------------------------------------
 //
@@ -163,15 +83,15 @@ void SpriteProgressToRadial::onEnter()
     auto left = ProgressTimer::create(Sprite::create(s_pathSister1));
     left->setType( ProgressTimer::Type::RADIAL );
     addChild(left);
-    left->setPosition(Vec2(100, s.height/2));
+    left->setPosition(100, s.height/2);
     left->runAction( RepeatForever::create(to1));
     
     auto right = ProgressTimer::create(Sprite::create(s_pathBlock));
     right->setType(ProgressTimer::Type::RADIAL);
     // Makes the ridial CCW
-    right->setReverseProgress(true);
+    right->setReverseDirection(true);
     addChild(right);
-    right->setPosition(Vec2(s.width-100, s.height/2));
+    right->setPosition(s.width-100, s.height/2);
     right->runAction( RepeatForever::create(to2));
 }
 
@@ -202,7 +122,7 @@ void SpriteProgressToHorizontal::onEnter()
     //    Setup for a horizontal bar since the bar change rate is 0 for y meaning no vertical change
     left->setBarChangeRate(Vec2(1, 0));
     addChild(left);
-    left->setPosition(Vec2(100, s.height/2));
+    left->setPosition(100, s.height/2);
     left->runAction( RepeatForever::create(to1));
     
     auto right = ProgressTimer::create(Sprite::create(s_pathSister2));
@@ -212,7 +132,7 @@ void SpriteProgressToHorizontal::onEnter()
     //    Setup for a horizontal bar since the bar change rate is 0 for y meaning no vertical change
     right->setBarChangeRate(Vec2(1, 0));
     addChild(right);
-    right->setPosition(Vec2(s.width-100, s.height/2));
+    right->setPosition(s.width-100, s.height/2);
     right->runAction( RepeatForever::create(to2));
 }
 
@@ -243,7 +163,7 @@ void SpriteProgressToVertical::onEnter()
     //    Setup for a vertical bar since the bar change rate is 0 for x meaning no horizontal change
     left->setBarChangeRate(Vec2(0, 1));
     addChild(left);
-    left->setPosition(Vec2(100, s.height/2));
+    left->setPosition(100, s.height/2);
     left->runAction( RepeatForever::create(to1));
     
     auto right = ProgressTimer::create(Sprite::create(s_pathSister2));
@@ -253,7 +173,7 @@ void SpriteProgressToVertical::onEnter()
     //    Setup for a vertical bar since the bar change rate is 0 for x meaning no horizontal change
     right->setBarChangeRate(Vec2(0, 1));
     addChild(right);
-    right->setPosition(Vec2(s.width-100, s.height/2));
+    right->setPosition(s.width-100, s.height/2);
     right->runAction( RepeatForever::create(to2));
 }
 
@@ -282,7 +202,7 @@ void SpriteProgressToRadialMidpointChanged::onEnter()
     left->setType(ProgressTimer::Type::RADIAL);
     addChild(left);
     left->setMidpoint(Vec2(0.25f, 0.75f));
-    left->setPosition(Vec2(100, s.height/2));
+    left->setPosition(100, s.height/2);
     left->runAction(RepeatForever::create(action->clone()));
 
     /**
@@ -297,7 +217,7 @@ void SpriteProgressToRadialMidpointChanged::onEnter()
    *  we get a counter clockwise progress.
    */
     addChild(right);
-    right->setPosition(Vec2(s.width-100, s.height/2));
+    right->setPosition(s.width-100, s.height/2);
     right->runAction(RepeatForever::create(action->clone()));
 }
 
@@ -327,7 +247,7 @@ void SpriteProgressBarVarious::onEnter()
     //    Setup for a vertical bar since the bar change rate is 0 for x meaning no horizontal change
     left->setBarChangeRate(Vec2(1, 0));
     addChild(left);
-    left->setPosition(Vec2(100, s.height/2));
+    left->setPosition(100, s.height/2);
     left->runAction(RepeatForever::create(to->clone()));
 
     auto middle = ProgressTimer::create(Sprite::create(s_pathSister2));
@@ -337,7 +257,7 @@ void SpriteProgressBarVarious::onEnter()
     //    Setup for a vertical bar since the bar change rate is 0 for x meaning no horizontal change
     middle->setBarChangeRate(Vec2(1,1));
     addChild(middle);
-    middle->setPosition(Vec2(s.width/2, s.height/2));
+    middle->setPosition(s.width/2, s.height/2);
     middle->runAction(RepeatForever::create(to->clone()));
 
     auto right = ProgressTimer::create(Sprite::create(s_pathSister2));
@@ -347,7 +267,7 @@ void SpriteProgressBarVarious::onEnter()
     //    Setup for a vertical bar since the bar change rate is 0 for x meaning no horizontal change
     right->setBarChangeRate(Vec2(0, 1));
     addChild(right);
-    right->setPosition(Vec2(s.width-100, s.height/2));
+    right->setPosition(s.width-100, s.height/2);
     right->runAction(RepeatForever::create(to->clone()));
 }
 
@@ -371,10 +291,10 @@ void SpriteProgressBarTintAndFade::onEnter()
 	auto tint = Sequence::create(TintTo::create(1, 255, 0, 0),
 								   TintTo::create(1, 0, 255, 0),
 								   TintTo::create(1, 0, 0, 255),
-								   NULL);
+								   nullptr);
 	auto fade = Sequence::create(FadeTo::create(1.0f, 0),
 								   FadeTo::create(1.0f, 255),
-								   NULL);
+								   nullptr);
 
     auto left = ProgressTimer::create(Sprite::create(s_pathSister1));
     left->setType(ProgressTimer::Type::BAR);
@@ -384,7 +304,7 @@ void SpriteProgressBarTintAndFade::onEnter()
     //    Setup for a vertical bar since the bar change rate is 0 for x meaning no horizontal change
     left->setBarChangeRate(Vec2(1, 0));
     addChild(left);
-    left->setPosition(Vec2(100, s.height/2));
+    left->setPosition(100, s.height/2);
     left->runAction(RepeatForever::create(to->clone()));
     left->runAction(RepeatForever::create(tint->clone()));
 
@@ -397,7 +317,7 @@ void SpriteProgressBarTintAndFade::onEnter()
     //    Setup for a vertical bar since the bar change rate is 0 for x meaning no horizontal change
     middle->setBarChangeRate(Vec2(1, 1));
     addChild(middle);
-    middle->setPosition(Vec2(s.width/2, s.height/2));
+    middle->setPosition(s.width/2, s.height/2);
     middle->runAction(RepeatForever::create(to->clone()));
     middle->runAction(RepeatForever::create(fade->clone()));
 
@@ -410,7 +330,7 @@ void SpriteProgressBarTintAndFade::onEnter()
     //    Setup for a vertical bar since the bar change rate is 0 for x meaning no horizontal change
     right->setBarChangeRate(Vec2(0, 1));
     addChild(right);
-    right->setPosition(Vec2(s.width-100, s.height/2));
+    right->setPosition(s.width-100, s.height/2);
     right->runAction(RepeatForever::create(to->clone()));
 	right->runAction(RepeatForever::create(tint->clone()));
     right->runAction(RepeatForever::create(fade->clone()));
@@ -445,7 +365,7 @@ void SpriteProgressWithSpriteFrame::onEnter()
     //    Setup for a vertical bar since the bar change rate is 0 for x meaning no horizontal change
     left->setBarChangeRate(Vec2(1, 0));
     addChild(left);
-    left->setPosition(Vec2(100, s.height/2));
+    left->setPosition(100, s.height/2);
     left->runAction(RepeatForever::create(to->clone()));
 
     auto middle = ProgressTimer::create(Sprite::createWithSpriteFrameName("grossini_dance_02.png"));
@@ -455,7 +375,7 @@ void SpriteProgressWithSpriteFrame::onEnter()
     //    Setup for a vertical bar since the bar change rate is 0 for x meaning no horizontal change
     middle->setBarChangeRate(Vec2(1, 1));
     addChild(middle);
-    middle->setPosition(Vec2(s.width/2, s.height/2));
+    middle->setPosition(s.width/2, s.height/2);
     middle->runAction(RepeatForever::create(to->clone()));
 
     auto right = ProgressTimer::create(Sprite::createWithSpriteFrameName("grossini_dance_03.png"));
@@ -465,7 +385,7 @@ void SpriteProgressWithSpriteFrame::onEnter()
     //    Setup for a vertical bar since the bar change rate is 0 for x meaning no horizontal change
     right->setBarChangeRate(Vec2(0, 1));
     addChild(right);
-    right->setPosition(Vec2(s.width-100, s.height/2));
+    right->setPosition(s.width-100, s.height/2);
     right->runAction(RepeatForever::create(to->clone()));
 }
 

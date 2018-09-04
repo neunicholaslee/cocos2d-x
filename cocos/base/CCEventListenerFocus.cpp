@@ -1,6 +1,7 @@
 /****************************************************************************
  Copyright (c) 2014 cocos2d-x.org
- Copyright (c) 2014 Chukong Technologies Inc.
+ Copyright (c) 2014-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -23,9 +24,9 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#include "CCEventListenerFocus.h"
-#include "CCEventFocus.h"
-#include "ccMacros.h"
+#include "base/CCEventListenerFocus.h"
+#include "base/CCEventFocus.h"
+#include "base/ccMacros.h"
 
 NS_CC_BEGIN
 
@@ -46,7 +47,7 @@ EventListenerFocus::~EventListenerFocus()
 
 EventListenerFocus* EventListenerFocus::create()
 {
-    EventListenerFocus* ret = new EventListenerFocus;
+    EventListenerFocus* ret = new (std::nothrow) EventListenerFocus;
     if (ret && ret->init()) {
         ret->autorelease();
         return ret;
@@ -57,7 +58,7 @@ EventListenerFocus* EventListenerFocus::create()
 
 EventListenerFocus* EventListenerFocus::clone()
 {
-    EventListenerFocus* ret = new EventListenerFocus;
+    EventListenerFocus* ret = new (std::nothrow) EventListenerFocus;
     if (ret && ret->init()) {
         ret->autorelease();
         

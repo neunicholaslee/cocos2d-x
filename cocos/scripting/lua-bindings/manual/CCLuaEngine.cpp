@@ -1,6 +1,7 @@
 /****************************************************************************
  Copyright (c) 2012      cocos2d-x.org
- Copyright (c) 2013-2014 Chukong Technologies Inc.
+ Copyright (c) 2013-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
  http://www.cocos2d-x.org
 
@@ -23,15 +24,20 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#include "CCLuaEngine.h"
-#include "tolua_fix.h"
-#include "cocos2d.h"
+#include "scripting/lua-bindings/manual/CCLuaEngine.h"
+#include "scripting/lua-bindings/manual/tolua_fix.h"
+
 #include "extensions/GUI/CCControlExtension/CCControl.h"
-#include "LuaOpengl.h"
-#include "lua_cocos2dx_manual.hpp"
-#include "lua_cocos2dx_extension_manual.h"
-#include "lua_cocos2dx_coco_studio_manual.hpp"
-#include "lua_cocos2dx_ui_manual.hpp"
+#include "scripting/lua-bindings/manual/cocos2d/LuaOpengl.h"
+#include "scripting/lua-bindings/manual/cocos2d/lua_cocos2dx_manual.hpp"
+#include "scripting/lua-bindings/manual/extension/lua_cocos2dx_extension_manual.h"
+#include "scripting/lua-bindings/manual/cocostudio/lua_cocos2dx_coco_studio_manual.hpp"
+#include "scripting/lua-bindings/manual/ui/lua_cocos2dx_ui_manual.hpp"
+#include "2d/CCMenuItem.h"
+#include "base/CCDirector.h"
+#include "base/CCEventCustom.h"
+
+#pragma comment(lib,"lua51.lib")
 
 NS_CC_BEGIN
 
@@ -41,7 +47,7 @@ LuaEngine* LuaEngine::getInstance(void)
 {
     if (!_defaultEngine)
     {
-        _defaultEngine = new LuaEngine();
+        _defaultEngine = new (std::nothrow) LuaEngine();
         _defaultEngine->init();
     }
     return _defaultEngine;
@@ -57,9 +63,6 @@ bool LuaEngine::init(void)
 {
     _stack = LuaStack::create();
     _stack->retain();
-    executeScriptFile("DeprecatedEnum.lua");
-    executeScriptFile("DeprecatedClass.lua");
-    executeScriptFile("Deprecated.lua");
     return true;
 }
 
@@ -389,7 +392,7 @@ int LuaEngine::handleKeypadEvent(void* data)
 
     switch(action)
     {
-        case EventKeyboard::KeyCode::KEY_BACKSPACE:
+        case EventKeyboard::KeyCode::KEY_ESCAPE:
 			_stack->pushString("backClicked");
 			break;
 		case EventKeyboard::KeyCode::KEY_MENU:
@@ -432,14 +435,14 @@ int LuaEngine::handleCommonEvent(void* data)
     if (NULL == data)
         return 0;
    
-    CommonScriptData* commonInfo = static_cast<CommonScriptData*>(data);
-    if (NULL == commonInfo->eventName || 0 == commonInfo->handler)
+    CommonScriptData* commonInfo = static_cast<CommonScriptData*>(data); 
+    if (0 == commonInfo->handler)
         return 0;
     
     _stack->pushString(commonInfo->eventName);
     if (NULL != commonInfo->eventSource)
     {
-        if (NULL  != commonInfo->eventSourceClassName && strlen(commonInfo->eventSourceClassName) > 0)
+        if (strlen(commonInfo->eventSourceClassName) > 0)
         {
             _stack->pushObject(commonInfo->eventSource, commonInfo->eventSourceClassName);
         }
@@ -780,11 +783,6 @@ int LuaEngine::handleEvent(ScriptHandlerMgr::HandlerType type,void* data)
                 return handleAssetsManagerEvent(type, data);
             }
             break;
-        case ScriptHandlerMgr::HandlerType::STUDIO_EVENT_LISTENER:
-            {
-                return handleStudioEventListener(type, data);
-            }
-            break;
         case ScriptHandlerMgr::HandlerType::ARMATURE_EVENT:
             {
                 return handleArmatureWrapper(type, data);
@@ -993,31 +991,6 @@ int LuaEngine::handleAssetsManagerEvent(ScriptHandlerMgr::HandlerType type,void*
     }
     
     return ret;
-}
-
-int LuaEngine::handleStudioEventListener(ScriptHandlerMgr::HandlerType type,void* data)
-{
-    if (nullptr == data)
-        return 0;
-    
-    BasicScriptData* eventData = static_cast<BasicScriptData*>(data);
-    if (nullptr == eventData->nativeObject || nullptr == eventData->value)
-        return 0;
-    
-    LuaStudioEventListenerData* listenerData = static_cast<LuaStudioEventListenerData*>(eventData->value);
-    
-    int handler = ScriptHandlerMgr::getInstance()->getObjectHandler((void*)eventData->nativeObject, ScriptHandlerMgr::HandlerType::STUDIO_EVENT_LISTENER);
-    
-    if (0 == handler)
-        return 0;
-    
-    _stack->pushObject(listenerData->objTarget, "cc.Ref");
-    _stack->pushInt(listenerData->eventType);
-    
-    _stack->executeFunctionByHandler(handler, 2);
-    _stack->clean();
-    
-    return 0;
 }
 
 int LuaEngine::handleArmatureWrapper(ScriptHandlerMgr::HandlerType type,void* data)

@@ -1,3 +1,27 @@
+/****************************************************************************
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
+ 
+ http://www.cocos2d-x.org
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ 
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE.
+ ****************************************************************************/
+
 #include <ctype.h>
 #include <algorithm>
 
@@ -7,15 +31,15 @@
 #include "2d/CCSpriteFrameCache.h"
 #include "renderer/CCTextureCache.h"
 
-#include "CCBReader.h"
-#include "CCNodeLoader.h"
-#include "CCNodeLoaderLibrary.h"
-#include "CCNodeLoaderListener.h"
-#include "CCBMemberVariableAssigner.h"
-#include "CCBSelectorResolver.h"
-#include "CCBAnimationManager.h"
-#include "CCBSequenceProperty.h"
-#include "CCBKeyframe.h"
+#include "editor-support/cocosbuilder/CCBReader.h"
+#include "editor-support/cocosbuilder/CCNodeLoader.h"
+#include "editor-support/cocosbuilder/CCNodeLoaderLibrary.h"
+#include "editor-support/cocosbuilder/CCNodeLoaderListener.h"
+#include "editor-support/cocosbuilder/CCBMemberVariableAssigner.h"
+#include "editor-support/cocosbuilder/CCBSelectorResolver.h"
+#include "editor-support/cocosbuilder/CCBAnimationManager.h"
+#include "editor-support/cocosbuilder/CCBSequenceProperty.h"
+#include "editor-support/cocosbuilder/CCBKeyframe.h"
 #include <sstream>
 
 using namespace cocos2d;
@@ -31,7 +55,7 @@ CCBFile::CCBFile():_CCBFileNode(nullptr) {}
 
 CCBFile* CCBFile::create()
 {
-    CCBFile *ret = new CCBFile();
+    CCBFile *ret = new (std::nothrow) CCBFile();
     
     if (ret)
     {
@@ -128,7 +152,7 @@ CCBReader::~CCBReader()
 
 void CCBReader::setCCBRootPath(const char* ccbRootPath)
 {
-    CCASSERT(ccbRootPath != nullptr, "");
+    CCASSERT(ccbRootPath != nullptr, "ccbRootPath can't be nullptr!");
     _CCBRootPath = ccbRootPath;
 }
 
@@ -140,7 +164,7 @@ const std::string& CCBReader::getCCBRootPath() const
 bool CCBReader::init()
 {
     // Setup action manager
-    CCBAnimationManager *pActionManager = new CCBAnimationManager();
+    CCBAnimationManager *pActionManager = new (std::nothrow) CCBAnimationManager();
     setAnimationManager(pActionManager);
     pActionManager->release();
     
@@ -220,7 +244,7 @@ Node* CCBReader::readNodeGraphFromFile(const char *pCCBFileName, Ref *pOwner, co
         strCCBFileName += strSuffix;
     }
 
-    std::string strPath = FileUtils::getInstance()->fullPathForFilename(strCCBFileName.c_str());
+    std::string strPath = FileUtils::getInstance()->fullPathForFilename(strCCBFileName);
 
     auto dataPtr = std::make_shared<Data>(FileUtils::getInstance()->getDataFromFile(strPath));
     
@@ -477,7 +501,7 @@ float CCBReader::readFloat()
             {
                 /* using a memcpy since the compiler isn't
                  * doing the float ptr math correctly on device.
-                 * TODO still applies in C++ ? */
+                 * TODO: still applies in C++ ? */
                 unsigned char* pF = (this->_bytes + this->_currentByte);
                 float f = 0;
                 
@@ -561,7 +585,7 @@ Node * CCBReader::readNodeGraph(Node * pParent)
         
         for (int j = 0; j < numProps; ++j)
         {
-            CCBSequenceProperty *seqProp = new CCBSequenceProperty();
+            CCBSequenceProperty *seqProp = new (std::nothrow) CCBSequenceProperty();
             seqProp->autorelease();
             
             seqProp->setName(readCachedString().c_str());
@@ -604,7 +628,7 @@ Node * CCBReader::readNodeGraph(Node * pParent)
         embeddedNode->setScaleY(ccbFileNode->getScaleY());
         embeddedNode->setTag(ccbFileNode->getTag());
         embeddedNode->setVisible(true);
-        //embeddedNode->ignoreAnchorPointForPosition(ccbFileNode->isIgnoreAnchorPointForPosition());
+        //embeddedNode->setIgnoreAnchorPointForPosition(ccbFileNode->isIgnoreAnchorPointForPosition());
         
         _animationManager->moveAnimationsFromNode(ccbFileNode, embeddedNode);
 
@@ -613,13 +637,6 @@ Node * CCBReader::readNodeGraph(Node * pParent)
         node = embeddedNode;
     }
 
-#ifdef CCB_ENABLE_JAVASCRIPT
-    /*
-     if (memberVarAssignmentType && memberVarAssignmentName && ![memberVarAssignmentName isEqualToString:@""])
-     {
-     [[JSCocoa sharedController] setObject:node withName:memberVarAssignmentName];
-     }*/
-#else
     if (memberVarAssignmentType != TargetType::NONE)
     {
         if(!_jsControlled)
@@ -696,8 +713,6 @@ Node * CCBReader::readNodeGraph(Node * pParent)
             }
         }
     }
-
-#endif // CCB_ENABLE_JAVASCRIPT
     
     delete _animatedProps;
     _animatedProps = nullptr;
@@ -731,7 +746,7 @@ Node * CCBReader::readNodeGraph(Node * pParent)
 
 CCBKeyframe* CCBReader::readKeyframe(PropertyType type)
 {
-    CCBKeyframe *keyframe = new CCBKeyframe();
+    CCBKeyframe *keyframe = new (std::nothrow) CCBKeyframe();
     keyframe->autorelease();
     
     keyframe->setTime(readFloat());
@@ -796,11 +811,11 @@ CCBKeyframe* CCBReader::readKeyframe(PropertyType type)
         
         SpriteFrame* spriteFrame;
 
-        if (spriteSheet.length() == 0)
+        if (spriteSheet.empty())
         {
             spriteFile = _CCBRootPath + spriteFile;
 
-            Texture2D *texture = Director::getInstance()->getTextureCache()->addImage(spriteFile.c_str());
+            Texture2D *texture = Director::getInstance()->getTextureCache()->addImage(spriteFile);
             Rect bounds = Rect(0, 0, texture->getContentSize().width, texture->getContentSize().height);
             
             spriteFrame = SpriteFrame::createWithTexture(texture, bounds);
@@ -813,11 +828,11 @@ CCBKeyframe* CCBReader::readKeyframe(PropertyType type)
             // Load the sprite sheet only if it is not loaded            
             if (_loadedSpriteSheets.find(spriteSheet) == _loadedSpriteSheets.end())
             {
-                frameCache->addSpriteFramesWithFile(spriteSheet.c_str());
+                frameCache->addSpriteFramesWithFile(spriteSheet);
                 _loadedSpriteSheets.insert(spriteSheet);
             }
             
-            spriteFrame = frameCache->getSpriteFrameByName(spriteFile.c_str());
+            spriteFrame = frameCache->getSpriteFrameByName(spriteFile);
         }
         
         keyframe->setObject(spriteFrame);
@@ -835,7 +850,7 @@ bool CCBReader::readCallbackKeyframesForSeq(CCBSequence* seq)
     int numKeyframes = readInt(false);
     if(!numKeyframes) return true;
     
-    CCBSequenceProperty* channel = new CCBSequenceProperty();
+    CCBSequenceProperty* channel = new (std::nothrow) CCBSequenceProperty();
     channel->autorelease();
 
     for(int i = 0; i < numKeyframes; ++i) {
@@ -849,7 +864,7 @@ bool CCBReader::readCallbackKeyframesForSeq(CCBSequence* seq)
         valueVector.push_back(Value(callbackName));
         valueVector.push_back(Value(callbackType));
         
-        CCBKeyframe* keyframe = new CCBKeyframe();
+        CCBKeyframe* keyframe = new (std::nothrow) CCBKeyframe();
         keyframe->autorelease();
         
         keyframe->setTime(time);
@@ -874,7 +889,7 @@ bool CCBReader::readSoundKeyframesForSeq(CCBSequence* seq) {
     int numKeyframes = readInt(false);
     if(!numKeyframes) return true;
     
-    CCBSequenceProperty* channel = new CCBSequenceProperty();
+    CCBSequenceProperty* channel = new (std::nothrow) CCBSequenceProperty();
     channel->autorelease();
 
     for(int i = 0; i < numKeyframes; ++i) {
@@ -891,7 +906,7 @@ bool CCBReader::readSoundKeyframesForSeq(CCBSequence* seq) {
         vec.push_back(Value(pan));
         vec.push_back(Value(gain));
         
-        CCBKeyframe* keyframe = new CCBKeyframe();
+        CCBKeyframe* keyframe = new (std::nothrow) CCBKeyframe();
         keyframe->setTime(time);
         keyframe->setValue(Value(vec));
         channel->getKeyframes().pushBack(keyframe);
@@ -916,7 +931,7 @@ bool CCBReader::readSequences()
     
     for (int i = 0; i < numSeqs; i++)
     {
-        CCBSequence *seq = new CCBSequence();
+        CCBSequence *seq = new (std::nothrow) CCBSequence();
         seq->autorelease();
         
         seq->setDuration(readFloat());

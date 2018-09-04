@@ -1,6 +1,36 @@
+/****************************************************************************
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
+ 
+ http://www.cocos2d-x.org
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ 
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE.
+ ****************************************************************************/
+
 #include "DataVisitorTest.h"
 #include "../testResource.h"
 
+USING_NS_CC;
+
+DataVisitorTests::DataVisitorTests()
+{
+    ADD_TEST_CASE(PrettyPrinterDemo);
+}
 std::string PrettyPrinterDemo::title() const
 {
     return "PrettyPrinter Test";
@@ -21,11 +51,11 @@ void PrettyPrinterDemo::addSprite()
     auto s4 = Sprite::create("Images/grossini_dance_03.png");
     auto s5 = Sprite::create("Images/grossini_dance_04.png");
     
-    s1->setPosition(Vec2(50, 50));
-    s2->setPosition(Vec2(60, 50));
-    s3->setPosition(Vec2(70, 50));
-    s4->setPosition(Vec2(80, 50));
-    s5->setPosition(Vec2(90, 50));
+    s1->setPosition(50, 50);
+    s2->setPosition(60, 50);
+    s3->setPosition(70, 50);
+    s4->setPosition(80, 50);
+    s5->setPosition(90, 50);
     
     this->addChild(s1);
     this->addChild(s2);
@@ -36,51 +66,42 @@ void PrettyPrinterDemo::addSprite()
 
 void PrettyPrinterDemo::onEnter()
 {
-    Layer::onEnter();
+    TestCase::onEnter();
     auto s = Director::getInstance()->getWinSize();
     
     auto label = Label::createWithTTF(title().c_str(), "fonts/arial.ttf", 28);
-    label->setPosition( Vec2(s.width/2, s.height * 4/5) );
+    label->setPosition(s.width/2, s.height * 4/5);
     this->addChild(label, 1);
     
     std::string strSubtitle = subtitle();
     if(strSubtitle.empty() == false)
     {
         auto subLabel = Label::createWithTTF(strSubtitle.c_str(), "fonts/Thonburi.ttf", 16);
-        subLabel->setPosition( Vec2(s.width/2, s.height * 3/5) );
+        subLabel->setPosition(s.width/2, s.height * 3/5);
         this->addChild(subLabel, 1);
     }
     
     // Test code
-    PrettyPrinter vistor;
+    PrettyPrinter visitor;
     
     // print dictionary
-    auto dict = Dictionary::createWithContentsOfFile("animations/animations.plist");
-    dict->acceptVisitor(vistor);
-    log("%s", vistor.getResult().c_str());
+    auto dict = __Dictionary::createWithContentsOfFile("animations/animations.plist");
+    dict->acceptVisitor(visitor);
+    log("%s", visitor.getResult().c_str());
     log("-------------------------------");
     
     __Set myset;
     for (int i = 0; i < 30; ++i) {
-        myset.addObject(String::createWithFormat("str: %d", i));
+        myset.addObject(__String::createWithFormat("str: %d", i));
     }
-    vistor.clear();
-    myset.acceptVisitor(vistor);
-    log("%s", vistor.getResult().c_str());
+    visitor.clear();
+    myset.acceptVisitor(visitor);
+    log("%s", visitor.getResult().c_str());
     log("-------------------------------");
     
-    vistor.clear();
+    visitor.clear();
     addSprite();
 //    dict = Director::getInstance()->getTextureCache()->snapshotTextures();
-//    dict->acceptVisitor(vistor);
-//    log("%s", vistor.getResult().c_str());
-}
-
-void DataVisitorTestScene::runThisTest()
-{
-    auto layer = new PrettyPrinterDemo();
-    layer->autorelease();
-    addChild(layer);
-
-    Director::getInstance()->replaceScene(this);
+//    dict->acceptVisitor(visitor);
+//    log("%s", visitor.getResult().c_str());
 }

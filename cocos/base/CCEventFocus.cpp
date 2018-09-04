@@ -1,6 +1,7 @@
 /****************************************************************************
  Copyright (c) 2014 cocos2d-x.org
- Copyright (c) 2014 Chukong Technologies Inc.
+ Copyright (c) 2014-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -23,15 +24,15 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#include "CCEventFocus.h"
+#include "base/CCEventFocus.h"
 
 NS_CC_BEGIN
 
 
 EventFocus::EventFocus(ui::Widget *widgetLoseFocus, ui::Widget* widgetGetFocus)
 :Event(Type::FOCUS),
-_widgetLoseFocus(widgetLoseFocus),
-_widgetGetFocus(widgetGetFocus)
+_widgetGetFocus(widgetGetFocus),
+_widgetLoseFocus(widgetLoseFocus)
 {
     
 }

@@ -1,5 +1,6 @@
 /****************************************************************************
- Copyright (c) 2013-2014 Chukong Technologies Inc.
+ Copyright (c) 2013-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -24,8 +25,15 @@
 
 #ifndef cocos2d_libs_UIDeprecated_h
 #define cocos2d_libs_UIDeprecated_h
+/// @cond DO_NOT_SHOW
 
-#include "base/CCPlatformMacros.h"
+#include "platform/CCPlatformMacros.h"
+#include "ui/UIWidget.h"
+#include "ui/UILayout.h"
+#include "ui/UIListView.h"
+#include "ui/UILoadingBar.h"
+#include "ui/UIPageView.h"
+#include "ui/UIRichText.h"
 
 NS_CC_BEGIN
 
@@ -147,7 +155,7 @@ CC_DEPRECATED_ATTRIBUTE typedef LoadingBar::Direction LoadingBarType;
 CC_DEPRECATED_ATTRIBUTE typedef PageView::TouchDirection PVTouchDir;
 CC_DEPRECATED_ATTRIBUTE typedef RichElement::Type RichElementType;
 CC_DEPRECATED_ATTRIBUTE typedef ScrollView::Direction SCROLLVIEW_DIR;
-
+CC_DEPRECATED_ATTRIBUTE extern const Margin MarginZero;
 
 
 }
@@ -155,4 +163,5 @@ CC_DEPRECATED_ATTRIBUTE typedef ScrollView::Direction SCROLLVIEW_DIR;
 
 NS_CC_END
 
+/// @endcond
 #endif

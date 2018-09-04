@@ -1,95 +1,35 @@
+/****************************************************************************
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
+ 
+ http://www.cocos2d-x.org
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ 
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE.
+ ****************************************************************************/
+
 #include "ZwoptexTest.h"
 #include "../testResource.h"
 
-#define MAX_LAYER    1
+USING_NS_CC;
 
-static int sceneIdx = -1;
-
-Layer* nextZwoptexTest();
-Layer* backZwoptexTest();
-Layer* restartZwoptexTest();
-
-Layer* createZwoptexLayer(int nIndex)
+ZwoptexTests::ZwoptexTests()
 {
-    switch(nIndex)
-    {
-    case 0: return new ZwoptexGenericTest();
-    }
-
-    return NULL;
-}
-
-Layer* nextZwoptexTest()
-{
-    sceneIdx++;
-    sceneIdx = sceneIdx % MAX_LAYER;
-
-    auto layer = createZwoptexLayer(sceneIdx);
-    layer->autorelease();
-
-    return layer;
-}
-
-Layer* backZwoptexTest()
-{
-    sceneIdx--;
-    int total = MAX_LAYER;
-    if( sceneIdx < 0 )
-        sceneIdx += total;    
-
-    auto layer = createZwoptexLayer(sceneIdx);
-    layer->autorelease();
-
-    return layer;
-}
-
-Layer* restartZwoptexTest()
-{
-    auto layer = createZwoptexLayer(sceneIdx);
-    layer->autorelease();
-
-    return layer;
-} 
-
-//------------------------------------------------------------------
-//
-// ZwoptexTest
-//
-//------------------------------------------------------------------
-void ZwoptexTest::onEnter()
-{
-    BaseTest::onEnter();
-}
-
-void ZwoptexTest::restartCallback(Ref* sender)
-{
-    auto s = ZwoptexTestScene::create();
-    s->addChild(restartZwoptexTest());
-    Director::getInstance()->replaceScene(s);
-}
-
-void ZwoptexTest::nextCallback(Ref* sender)
-{
-    auto s = ZwoptexTestScene::create();
-    s->addChild(nextZwoptexTest());
-    Director::getInstance()->replaceScene(s);
-}
-
-void ZwoptexTest::backCallback(Ref* sender)
-{
-    auto s = ZwoptexTestScene::create();
-    s->addChild(backZwoptexTest());
-    Director::getInstance()->replaceScene(s);
-}
-
-std::string ZwoptexTest::title() const
-{
-    return "No title";
-}
-
-std::string ZwoptexTest::subtitle() const
-{
-    return "";
+    ADD_TEST_CASE(ZwoptexGenericTest);
 }
 
 //------------------------------------------------------------------
@@ -128,7 +68,7 @@ void ZwoptexGenericTest::onEnter()
     sprite2->setFlippedX(false);
     sprite2->setFlippedY(false);
 
-    schedule(schedule_selector(ZwoptexGenericTest::startIn05Secs), 1.0f);
+    schedule(CC_SCHEDULE_SELECTOR(ZwoptexGenericTest::startIn05Secs), 1.0f);
     
     sprite1->retain();
     sprite2->retain();
@@ -138,8 +78,8 @@ void ZwoptexGenericTest::onEnter()
 
 void ZwoptexGenericTest::startIn05Secs(float dt)
 {
-    unschedule(schedule_selector(ZwoptexGenericTest::startIn05Secs));
-    schedule(schedule_selector(ZwoptexGenericTest::flipSprites), 0.5f);
+    unschedule(CC_SCHEDULE_SELECTOR(ZwoptexGenericTest::startIn05Secs));
+    schedule(CC_SCHEDULE_SELECTOR(ZwoptexGenericTest::flipSprites), 0.5f);
 }
 
 static int spriteFrameIndex = 0;
@@ -206,12 +146,4 @@ std::string ZwoptexGenericTest::title() const
 std::string ZwoptexGenericTest::subtitle() const
 {
     return "Coordinate Formats, Rotation, Trimming, flipX/Y";
-}
-
-void ZwoptexTestScene::runThisTest()
-{
-    auto layer = nextZwoptexTest();
-    addChild(layer);
-
-    Director::getInstance()->replaceScene(this);
 }

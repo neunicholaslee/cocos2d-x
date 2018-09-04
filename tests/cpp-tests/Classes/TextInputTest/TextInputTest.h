@@ -1,51 +1,55 @@
+/****************************************************************************
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
+ 
+ http://www.cocos2d-x.org
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ 
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE.
+ ****************************************************************************/
+
 #ifndef __TEXT_INPUT_TEST_H__
 #define __TEXT_INPUT_TEST_H__
 
-#include "../testBasic.h"
 #include "../BaseTest.h"
 
 class KeyboardNotificationLayer;
 
-/**
-@brief    TextInputTest for retain prev, reset, next, main menu buttons.
-*/
-class TextInputTest : public BaseTest
-{
-    KeyboardNotificationLayer * _notificationLayer;
-public:
-    TextInputTest();
-
-    void restartCallback(Ref* sender);
-    void nextCallback(Ref* sender);
-    void backCallback(Ref* sender);
-
-    virtual std::string title() const;
-    void addKeyboardNotificationLayer(KeyboardNotificationLayer * layer);
-    
-    virtual void onEnter() override;
-};
+DEFINE_TEST_SUITE(TextInputTests);
 
 //////////////////////////////////////////////////////////////////////////
 // KeyboardNotificationLayer for test IME keyboard notification.
 //////////////////////////////////////////////////////////////////////////
 
-class KeyboardNotificationLayer : public Layer, public IMEDelegate
+class KeyboardNotificationLayer : public TestCase, public cocos2d::IMEDelegate
 {
 public:
     KeyboardNotificationLayer();
+    virtual std::string title() const override;
+    virtual void onClickTrackNode(bool bClicked, const cocos2d::Vec2& touchPos) = 0;
 
-    virtual std::string subtitle() const = 0;
-    virtual void onClickTrackNode(bool bClicked) = 0;
+    virtual void keyboardWillShow(cocos2d::IMEKeyboardNotificationInfo& info)override;
 
-    virtual void keyboardWillShow(IMEKeyboardNotificationInfo& info);
-
-    // Layer
-    bool onTouchBegan(Touch  *touch, Event  *event);
-    void onTouchEnded(Touch  *touch, Event  *event);
+    bool onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event);
+    void onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event);
 
 protected:
-    Node * _trackNode;
-    Vec2  _beginPos;
+    cocos2d::Node*  _trackNode;
+    cocos2d::Vec2  _beginPos;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -55,9 +59,10 @@ protected:
 class TextFieldTTFDefaultTest : public KeyboardNotificationLayer
 {
 public:
+    CREATE_FUNC(TextFieldTTFDefaultTest);
     // KeyboardNotificationLayer
     virtual std::string subtitle() const override;
-    virtual void onClickTrackNode(bool bClicked);
+    virtual void onClickTrackNode(bool bClicked, const cocos2d::Vec2& touchPos) override;
 
     // Layer
     virtual void onEnter() override;
@@ -67,36 +72,60 @@ public:
 // TextFieldTTFActionTest
 //////////////////////////////////////////////////////////////////////////
 
-class TextFieldTTFActionTest : public KeyboardNotificationLayer, public TextFieldDelegate
+class TextFieldTTFActionTest : public KeyboardNotificationLayer, public cocos2d::TextFieldDelegate
 {
-    TextFieldTTF *    _textField;
-    Action *          _textFieldAction;
+    cocos2d::TextFieldTTF*    _textField;
+    cocos2d::Action*          _textFieldAction;
     bool                _action;
-    int                 _charLimit;       // the textfield max char limit
+    size_t              _charLimit;       // the textfield max char limit
 
 public:
+    CREATE_FUNC(TextFieldTTFActionTest);
     void callbackRemoveNodeWhenDidAction(Node * node);
 
     // KeyboardNotificationLayer
     virtual std::string subtitle() const override;
-    virtual void onClickTrackNode(bool bClicked);
+    virtual void onClickTrackNode(bool bClicked, const cocos2d::Vec2& touchPos) override;
 
     // Layer
     virtual void onEnter() override;
     virtual void onExit() override;
 
     // TextFieldDelegate
-    virtual bool onTextFieldAttachWithIME(TextFieldTTF * sender);
-    virtual bool onTextFieldDetachWithIME(TextFieldTTF * sender);
-    virtual bool onTextFieldInsertText(TextFieldTTF * sender, const char * text, size_t nLen) override;
-    virtual bool onTextFieldDeleteBackward(TextFieldTTF * sender, const char * delText, size_t nLen) override;
-    virtual bool onDraw(TextFieldTTF * sender);
+    virtual bool onTextFieldAttachWithIME(cocos2d::TextFieldTTF*  sender) override;
+    virtual bool onTextFieldDetachWithIME(cocos2d::TextFieldTTF*  sender) override;
+    virtual bool onTextFieldInsertText(cocos2d::TextFieldTTF*  sender, const char * text, size_t nLen) override;
+    virtual bool onTextFieldDeleteBackward(cocos2d::TextFieldTTF*  sender, const char * delText, size_t nLen) override;
+    virtual bool onDraw(cocos2d::TextFieldTTF*  sender);
 };
 
-class TextInputTestScene : public TestScene
+//////////////////////////////////////////////////////////////////////////
+// TextFieldTTFSecureTextEntryTest for test TextFieldTTF SecureTextEntry.
+//////////////////////////////////////////////////////////////////////////
+
+class TextFieldTTFSecureTextEntryTest : public TextFieldTTFDefaultTest
 {
 public:
-    virtual void runThisTest();
+    CREATE_FUNC(TextFieldTTFSecureTextEntryTest);
+    
+    virtual std::string subtitle() const override;
+    // Layer
+    virtual void onEnter() override;
 };
 
+//////////////////////////////////////////////////////////////////////////
+// TextFieldTTSetCursorFromPoint for test TextFieldTTF setCursorFromPoint.
+//////////////////////////////////////////////////////////////////////////
+
+class TextFieldTTSetCursorFromPoint : public KeyboardNotificationLayer
+{
+public:
+    CREATE_FUNC(TextFieldTTSetCursorFromPoint);
+    // KeyboardNotificationLayer
+    virtual std::string subtitle() const override;
+    virtual void onClickTrackNode(bool bClicked, const cocos2d::Vec2& touchPos) override;
+
+    // Layer
+    virtual void onEnter() override;
+};
 #endif    // __TEXT_INPUT_TEST_H__

@@ -1,5 +1,31 @@
+/****************************************************************************
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
+ 
+ http://www.cocos2d-x.org
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ 
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE.
+ ****************************************************************************/
+
 #include "ParallaxTest.h"
 #include "../testResource.h"
+
+USING_NS_CC;
 
 enum 
 {
@@ -7,9 +33,12 @@ enum
     kTagGrossini,
 };
 
-Layer* nextParallaxAction();
-Layer* backParallaxAction();
-Layer* restartParallaxAction();
+ParallaxTests::ParallaxTests()
+{
+    ADD_TEST_CASE(Parallax1);
+    ADD_TEST_CASE(Parallax2);
+    ADD_TEST_CASE(Issue2572);
+}
 
 //------------------------------------------------------------------
 //
@@ -68,7 +97,7 @@ Parallax1::Parallax1()
     auto goDown = goUp->reverse();
     auto go = MoveBy::create(8, Vec2(-1000,0) );
     auto goBack = go->reverse();
-    auto seq = Sequence::create(goUp, go, goDown, goBack, NULL);
+    auto seq = Sequence::create(goUp, go, goDown, goBack, nullptr);
     voidNode->runAction( (RepeatForever::create(seq) ));
     
     addChild( voidNode );
@@ -154,10 +183,10 @@ std::string Parallax2::title() const
 //
 //------------------------------------------------------------------
 Issue2572::Issue2572()
-: _preListSize(0)
-, _printCount(0)
-, _moveTimer(0.0f)
+: _moveTimer(0.0f)
 , _addTimer(0.0f)
+, _preListSize(0)
+, _printCount(0)
 {
     _addChildStep = 1.0f;
     _wholeMoveTime = 3.0f;
@@ -226,110 +255,4 @@ std::string Issue2572::title() const
 std::string Issue2572::subtitle() const
 {
     return "Look at the output in console";
-}
-
-//------------------------------------------------------------------
-//
-// ParallaxDemo
-//
-//------------------------------------------------------------------
-
-static int sceneIdx = -1; 
-
-#define MAX_LAYER    3
-
-Layer* createParallaxTestLayer(int nIndex)
-{
-    switch(nIndex)
-    {
-        case 0: return new Parallax1();
-        case 1: return new Parallax2();
-        case 2: return new Issue2572();
-    }
-
-    return NULL;
-}
-
-Layer* nextParallaxAction()
-{
-    sceneIdx++;
-    sceneIdx = sceneIdx % MAX_LAYER;
-
-    auto layer = createParallaxTestLayer(sceneIdx);
-    layer->autorelease();
-
-    return layer;
-}
-
-Layer* backParallaxAction()
-{
-    sceneIdx--;
-    int total = MAX_LAYER;
-    if( sceneIdx < 0 )
-        sceneIdx += total;    
-    
-    auto layer = createParallaxTestLayer(sceneIdx);
-    layer->autorelease();
-
-    return layer;
-}
-
-Layer* restartParallaxAction()
-{
-    auto layer = createParallaxTestLayer(sceneIdx);
-    layer->autorelease();
-
-    return layer;
-} 
-
-
-ParallaxDemo::ParallaxDemo(void)
-{
-}
-
-ParallaxDemo::~ParallaxDemo(void)
-{
-}
-
-std::string ParallaxDemo::title() const
-{
-    return "No title";
-}
-
-void ParallaxDemo::onEnter()
-{
-    BaseTest::onEnter();
-}
-
-void ParallaxDemo::restartCallback(Ref* sender)
-{
-    auto s = new ParallaxTestScene();
-    s->addChild(restartParallaxAction()); 
-
-    Director::getInstance()->replaceScene(s);
-    s->release();
-}
-
-void ParallaxDemo::nextCallback(Ref* sender)
-{
-    auto s = new ParallaxTestScene();
-    s->addChild( nextParallaxAction() );
-    Director::getInstance()->replaceScene(s);
-    s->release();
-}
-
-void ParallaxDemo::backCallback(Ref* sender)
-{
-    auto s = new ParallaxTestScene();
-    s->addChild( backParallaxAction() );
-    Director::getInstance()->replaceScene(s);
-    s->release();
-} 
-
-void ParallaxTestScene::runThisTest()
-{
-    auto layer = nextParallaxAction();
-
-    addChild(layer);
-    Director::getInstance()->replaceScene(this);
 }

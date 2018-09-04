@@ -1,5 +1,6 @@
 /****************************************************************************
- Copyright (c) 2013-2014 Chukong Technologies Inc.
+ Copyright (c) 2013-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -24,7 +25,6 @@
  ****************************************************************************/
 
 #include "base/CCEventListenerKeyboard.h"
-#include "base/CCEventKeyboard.h"
 #include "base/ccMacros.h"
 
 NS_CC_BEGIN
@@ -44,7 +44,7 @@ bool EventListenerKeyboard::checkAvailable()
 
 EventListenerKeyboard* EventListenerKeyboard::create()
 {
-    auto ret = new EventListenerKeyboard();
+    auto ret = new (std::nothrow) EventListenerKeyboard();
     if (ret && ret->init())
     {
         ret->autorelease();
@@ -58,7 +58,7 @@ EventListenerKeyboard* EventListenerKeyboard::create()
 
 EventListenerKeyboard* EventListenerKeyboard::clone()
 {
-    auto ret = new EventListenerKeyboard();
+    auto ret = new (std::nothrow) EventListenerKeyboard();
     if (ret && ret->init())
     {
         ret->autorelease();

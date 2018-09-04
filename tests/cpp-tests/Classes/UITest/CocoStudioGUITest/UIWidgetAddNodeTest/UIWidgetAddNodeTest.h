@@ -1,5 +1,6 @@
 /****************************************************************************
  Copyright (c) 2013 cocos2d-x.org
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -27,15 +28,17 @@
 
 #include "../UIScene.h"
 
+DEFINE_TEST_SUITE(UIWidgetAddNodeTests);
+
 class UIWidgetAddNodeTest : public UIScene
 {
 public:
+    CREATE_FUNC(UIWidgetAddNodeTest);
+
     UIWidgetAddNodeTest();
     ~UIWidgetAddNodeTest();
-    bool init();
-    
-protected:
-    UI_SCENE_CREATE_FUNC(UIWidgetAddNodeTest)
+
+    virtual bool init() override;
 };
 
 #endif /* defined(__TestCpp__UINodeContainerTest__) */

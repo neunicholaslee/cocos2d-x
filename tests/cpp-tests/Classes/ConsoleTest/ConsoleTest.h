@@ -1,5 +1,6 @@
 /****************************************************************************
  Copyright (c) 2013 cocos2d-x.org
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
  http://www.cocos2d-x.org
 
@@ -25,24 +26,17 @@
 #ifndef _CONSOLE_TEST_H_
 #define _CONSOLE_TEST_H_
 
-////----#include "cocos2d.h"
-#include "../testBasic.h"
 #include "../BaseTest.h"
 
-USING_NS_CC;
+DEFINE_TEST_SUITE(ConsoleTests);
 
-class BaseTestConsole : public BaseTest
+class BaseTestConsole : public TestCase
 {
 public:
     BaseTestConsole();
     ~BaseTestConsole();
 
     virtual std::string title() const override;
-    virtual void onEnter() override;
-
-    virtual void restartCallback(Ref* sender) override;
-    virtual void nextCallback(Ref* sender) override;
-    virtual void backCallback(Ref* sender) override;
 };
 
 
@@ -59,9 +53,7 @@ protected:
     ConsoleCustomCommand();
     virtual ~ConsoleCustomCommand();
 
-#if (CC_TARGET_PLATFORM != CC_PLATFORM_WINRT)
     cocos2d::Console *_console;
-#endif
 
 private:
     CC_DISALLOW_COPY_AND_ASSIGN(ConsoleCustomCommand);
@@ -81,16 +73,10 @@ protected:
     virtual ~ConsoleUploadFile();
 
     void uploadFile();
-    std::string _src_file_path;
-    std::string _target_file_name;
 private:
     CC_DISALLOW_COPY_AND_ASSIGN(ConsoleUploadFile);
-};
 
-class ConsoleTestScene : public TestScene
-{
-public:
-    virtual void runThisTest();
+    std::string _targetFileName;
 };
 
 #endif // _CONSOLE_TEST_H_

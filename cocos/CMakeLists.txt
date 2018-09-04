@@ -1,108 +1,177 @@
-if(WIN32)
-ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
+#/****************************************************************************
+# Copyright (c) 2013 cocos2d-x.org
+# Copyright (c) 2014 martell malone
+# Copyright (c) 2015-2017 Chukong Technologies Inc.
+#
+# http://www.cocos2d-x.org
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+# ****************************************************************************/
+
+# this CMakeLists is to generate Cocos2d-x Engine Library
+# build libcocos2d
+# build luacocos2d if BUILD_LUA_LIBS=ON
+# build jscocos2d if BUILD_JS_LIBS=ON
+
+# The version number
+set(COCOS2D_X_VERSION 3.17)
+
+set(COCOS_CORE_LIB cocos2d)
+
+if(WINDOWS)
+    add_definitions(-DUNICODE -D_UNICODE)
 endif()
-
-
-set(COCOS_SRC
-  cocos2d.cpp
-)
 
 include(2d/CMakeLists.txt)
 include(3d/CMakeLists.txt)
 include(platform/CMakeLists.txt)
 include(physics/CMakeLists.txt)
+include(physics3d/CMakeLists.txt)
 include(math/CMakeLists.txt)
+include(navmesh/CMakeLists.txt)
 include(renderer/CMakeLists.txt)
+include(vr/CMakeLists.txt)
 include(base/CMakeLists.txt)
-include(ui/CMakeLists.txt)
 include(deprecated/CMakeLists.txt)
+include(ui/CMakeLists.txt)
 include(network/CMakeLists.txt)
+include(audio/CMakeLists.txt)
 include(storage/CMakeLists.txt)
 
-add_library(cocos2d STATIC
-  ${COCOS_SRC}
-  ${COCOS_2D_SRC}
-  ${COCOS_3D_SRC}
-  ${COCOS_PLATFORM_SRC}
-  ${COCOS_BASE_SRC}
-  ${COCOS_RENDERER_SRC}
-  ${COCOS_MATH_SRC}
-  ${COCOS_PHYSICS_SRC}
-  ${COCOS_UI_SRC}
-  ${COCOS_NETWORK_SRC}
-  ${COCOS_STORAGE_SRC}
-  ${COCOS_DEPRECATED_SRC}
-)
+if(BUILD_EDITOR_COCOSBUILDER)
+    include(editor-support/cocosbuilder/CMakeLists.txt)
+    set(COCOS_EDITOR_SUPPORT_SRC ${COCOS_EDITOR_SUPPORT_SRC} ${COCOS_CCB_SRC} ${COCOS_CCB_HEADER})
+endif(BUILD_EDITOR_COCOSBUILDER)
 
-if(WIN32)
+if(BUILD_EDITOR_COCOSTUDIO)
+    include(editor-support/cocostudio/CMakeLists.txt)
+    set(COCOS_EDITOR_SUPPORT_SRC ${COCOS_EDITOR_SUPPORT_SRC} ${COCOS_CS_SRC} ${COCOS_CS_HEADER})
+endif(BUILD_EDITOR_COCOSTUDIO)
 
-if(MINGW)
+if(BUILD_EDITOR_SPINE)
+    include(editor-support/spine/CMakeLists.txt)
+    set(COCOS_EDITOR_SUPPORT_SRC ${COCOS_EDITOR_SUPPORT_SRC} ${COCOS_SPINE_SRC} ${COCOS_SPINE_HEADER})
+endif(BUILD_EDITOR_SPINE)
 
-set(COCOS_LINK
-  z
-  jpeg
-  png
-  webp
-  tiff
-  glfw3
-  glew32
-  opengl32
-  iconv
-  freetype
-  bz2
-  )
+if(BUILD_EXTENSIONS)
+    include(../extensions/CMakeLists.txt)
+endif(BUILD_EXTENSIONS)
 
-else()
+set(COCOS_HEADER cocos2d.h
+    ${COCOS_2D_HEADER}
+    ${COCOS_3D_HEADER}
+    ${COCOS_PLATFORM_HEADER}
+    ${COCOS_PHYSICS_HEADER}
+    ${COCOS_PHYSICS3D_HEADER}
+    ${COCOS_MATH_HEADER}
+    ${COCOS_NAVMESH_HEADER}
+    ${COCOS_RENDERER_HEADER}
+    ${COCOS_VR_HEADER}
+    ${COCOS_BASE_HEADER}
+    ${COCOS_AUDIO_HEADER}
+    ${COCOS_UI_HEADER}
+    ${COCOS_DEPRECATED_HEADER}
+    ${COCOS_NETWORK_HEADER}
+    ${COCOS_EDITOR_SUPPORT_HEADER}
+    ${COCOS_EXTENSIONS_HEADER}
+    ${COCOS_STORAGE_HEADER}
+    )
 
+set(COCOS_SRC cocos2d.cpp
+    ${COCOS_2D_SRC}
+    ${COCOS_3D_SRC}
+    ${COCOS_PLATFORM_SRC}
+    ${COCOS_PHYSICS_SRC}
+    ${COCOS_PHYSICS3D_SRC}
+    ${COCOS_MATH_SRC}
+    ${COCOS_NAVMESH_SRC}
+    ${COCOS_RENDERER_SRC}
+    ${COCOS_VR_SRC}
+    ${COCOS_BASE_SRC}
+    ${COCOS_AUDIO_SRC}
+    ${COCOS_UI_SRC}
+    ${COCOS_DEPRECATED_SRC}
+    ${COCOS_NETWORK_SRC}
+    ${COCOS_EDITOR_SUPPORT_SRC}
+    ${COCOS_EXTENSIONS_SRC}
+    ${COCOS_STORAGE_SRC}
+    )
 
-set(COCOS_LINK
-  libjpeg
-  libpng
-  libwebp
-  libtiff
-  freetype250
-  glfw3
-  glew32
-  opengl32
-  libiconv
-  libzlib
-  )
+#todo: provide prebuild versions of the xx libs for all platforms
+include_directories(../external/xxtea)
+include_directories(../external/clipper)
 
-endif()
+list(APPEND COCOS_SRC ${COCOS_HEADER})
 
-elseif(APPLE)
+add_library(cocos2d ${COCOS_SRC})
 
-else()
-set(COCOS_LINK
-  jpeg
-  webp
-  tiff
-  freetype
-  fontconfig
-  png
-  pthread
-  glfw
-  GLEW
-  GL
-  X11
-  rt
-  z
-)
-endif()
-
-target_link_libraries(cocos2d
-  chipmunk_static
-  tinyxml2
-  unzip
-  xxhash
-  ${COCOS_STORAGE_LINK}
-  ${COCOS_NETWORK_LINK}
-  ${COCOS_LINK}
-)
+# use necessary external libs and system libs
+include(CocosUseLibs)
+target_use_cocos2d_depend_libs(cocos2d)
 
 set_target_properties(cocos2d
-    PROPERTIES
-    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-)
+                      PROPERTIES
+                      ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+                      LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+                      VERSION "${COCOS2D_X_VERSION}"
+                      FOLDER "Internal"
+                      )
 
+# set custom target: prebuilt, to copy all libs to prebuilt libs folder
+if(GEN_COCOS_PREBUILT)
+    add_custom_target(prebuilt ALL)
+    add_dependencies(prebuilt cocos2d)
+    set_target_properties(prebuilt
+                          PROPERTIES
+                          FOLDER "Internal"
+                          )
+    add_custom_command(TARGET "prebuilt"
+                       POST_BUILD
+                       COMMAND ${CMAKE_COMMAND} -E copy_directory
+                       "${CMAKE_BINARY_DIR}/lib"
+                       "${COCOS_PREBUILT_PATH}"
+                       COMMENT "copy library directory:${CMAKE_BINARY_DIR}/lib to directory:${COCOS_PREBUILT_PATH}"
+                       )
+    if(BUILD_LUA_LIBS)
+        add_dependencies(prebuilt luacocos2d)
+    endif()
+    if(BUILD_JS_LIBS)
+        add_dependencies(prebuilt jscocos2d)
+    endif()
+    if(BUILD_SIMU_LIB AND (MACOSX OR WINDOWS))
+        add_dependencies(prebuilt simulator)
+    endif()
+endif()
+
+## Lua bindings lib
+if(BUILD_LUA_LIBS)
+    add_subdirectory(${COCOS2DX_ROOT_PATH}/cocos/scripting/lua-bindings ${ENGINE_BINARY_PATH}/cocos/lua-bindings)
+endif()
+## JS bindings lib
+if(BUILD_JS_LIBS)
+    add_subdirectory(${COCOS2DX_ROOT_PATH}/cocos/scripting/js-bindings ${ENGINE_BINARY_PATH}/cocos/js-bindings)
+endif()
+# simulator
+if(BUILD_SIMU_LIB AND (MACOSX OR WINDOWS))
+    add_subdirectory(${COCOS2DX_ROOT_PATH}/tools/simulator/libsimulator ${ENGINE_BINARY_PATH}/cocos/libsimulator)
+endif()
+
+if(XCODE OR VS)
+    cocos_mark_code_files("cocos2d")
+endif()

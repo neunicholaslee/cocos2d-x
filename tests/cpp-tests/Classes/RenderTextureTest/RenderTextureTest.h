@@ -1,20 +1,37 @@
+/****************************************************************************
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
+ 
+ http://www.cocos2d-x.org
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ 
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE.
+ ****************************************************************************/
+
 #ifndef _RENDERTEXTURE_TEST_H_
 #define _RENDERTEXTURE_TEST_H_
 
 #include "cocos2d.h"
-#include "../testBasic.h"
 #include "../BaseTest.h"
 
-class RenderTextureTest : public BaseTest
-{
-public:
-    virtual void onEnter() override;
-    virtual std::string title() const override;
-    virtual std::string subtitle() const override;
+DEFINE_TEST_SUITE(RenderTextureTests);
 
-    void restartCallback(Ref* sender);
-    void nextCallback(Ref* sender);
-    void backCallback(Ref* sender);
+class RenderTextureTest : public TestCase
+{
 };
 
 class RenderTextureSave : public RenderTextureTest
@@ -25,13 +42,13 @@ public:
     ~RenderTextureSave();
     virtual std::string title() const override;
     virtual std::string subtitle() const override;
-    void onTouchesMoved(const std::vector<Touch*>& touches, Event* event);
-    void clearImage(Ref *pSender);
-    void saveImage(Ref *pSender);
+    void onTouchesMoved(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event* event);
+    void clearImage(cocos2d::Ref* pSender);
+    void saveImage(cocos2d::Ref* pSender);
 
 private:
-    RenderTexture *_target;
-    Vector<Sprite*> _brushs;
+    cocos2d::RenderTexture* _target;
+    cocos2d::Vector<cocos2d::Sprite*> _brushs;
 };
 
 class RenderTextureIssue937 : public RenderTextureTest
@@ -43,28 +60,22 @@ public:
     virtual std::string subtitle() const override;
 };
 
-class RenderTextureScene : public TestScene
-{
-public:
-    virtual void runThisTest();
-};
-
 class RenderTextureZbuffer : public RenderTextureTest
 {
 public:
     CREATE_FUNC(RenderTextureZbuffer);
     RenderTextureZbuffer();
 
-    void onTouchesMoved(const std::vector<Touch*>& touches, Event* event);
-    void onTouchesBegan(const std::vector<Touch*>& touches, Event* event);
-    void onTouchesEnded(const std::vector<Touch*>& touches, Event* event);
+    void onTouchesMoved(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event* event);
+    void onTouchesBegan(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event* event);
+    void onTouchesEnded(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event* event);
     virtual std::string title() const override;
     virtual std::string subtitle() const override;
 
     void renderScreenShot();
 
 private:
-    cocos2d::SpriteBatchNode *mgr;;
+    cocos2d::SpriteBatchNode *mgr;
 
     cocos2d::Sprite *sp1;
     cocos2d::Sprite *sp2;
@@ -85,18 +96,18 @@ public:
     virtual ~RenderTextureTestDepthStencil();
     virtual std::string title() const override;
     virtual std::string subtitle() const override;
-    virtual void draw(Renderer *renderer, const Mat4 &transform, uint32_t flags) override;
+    virtual void draw(cocos2d::Renderer* renderer, const cocos2d::Mat4& transform, uint32_t flags) override;
 private:
-    CustomCommand _renderCmds[4];
+    cocos2d::CustomCommand _renderCmds[4];
     void onBeforeClear();
     void onBeforeStencil();
-    void onBeforDraw();
+    void onBeforeDraw();
     void onAfterDraw();
     
 private:
-    RenderTexture* _rend;
-    Sprite* _spriteDS;
-    Sprite* _spriteDraw;
+    cocos2d::RenderTexture* _rend;
+    cocos2d::Sprite* _spriteDS;
+    cocos2d::Sprite* _spriteDraw;
 };
 
 class RenderTextureTargetNode : public RenderTextureTest
@@ -108,11 +119,11 @@ public:
     CREATE_FUNC(RenderTextureTargetNode);
     RenderTextureTargetNode();
     
-    virtual void update(float t);
+    virtual void update(float t)override;
     virtual std::string title() const override;
     virtual std::string subtitle() const override;
     
-    void touched(Ref* sender);
+    void touched(cocos2d::Ref* sender);
 };
 
 class RenderTexturePartTest : public RenderTextureTest
@@ -125,34 +136,66 @@ public:
     virtual std::string subtitle() const override;
     
 private:
-    RenderTexture* _rend;
-    Sprite* _spriteDraw;
+    cocos2d::RenderTexture* _rend;
+    cocos2d::Sprite* _spriteDraw;
 };
 
 class SpriteRenderTextureBug : public RenderTextureTest
 {
 public:
     
-    class SimpleSprite : public Sprite
+    class SimpleSprite : public cocos2d::Sprite
     {
     public:
-        static SimpleSprite* create(const char* filename, const Rect &rect);
+        static SimpleSprite* create(const char* filename, const cocos2d::Rect &rect);
         SimpleSprite();
         ~SimpleSprite();
-        virtual void draw(Renderer *renderer, const Mat4 &transform, uint32_t flags);
+        virtual void draw(cocos2d::Renderer* renderer, const cocos2d::Mat4& transform, uint32_t flags);
     public:
-        RenderTexture *_rt;
+        cocos2d::RenderTexture* _rt;
     };
         
 public:
     CREATE_FUNC(SpriteRenderTextureBug);
     SpriteRenderTextureBug();
     
-    void onTouchesEnded(const std::vector<Touch*>& touches, Event* event);
+    void onTouchesEnded(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event* event);
     virtual std::string title() const override;
     virtual std::string subtitle() const override;
     
-    SimpleSprite* addNewSpriteWithCoords(const Vec2& p);
+    SimpleSprite* addNewSpriteWithCoords(const cocos2d::Vec2& p);
+};
+
+class Issue16113Test : public RenderTextureTest
+{
+public:
+    CREATE_FUNC(Issue16113Test);
+    Issue16113Test();
+    virtual std::string title() const override;
+    virtual std::string subtitle() const override;
+
+private:
+    cocos2d::RenderTexture* _rend;
+    cocos2d::Sprite* _spriteDraw;
+};
+
+class RenderTextureWithSprite3DIssue16894 : public RenderTextureTest
+{
+public:
+    CREATE_FUNC(RenderTextureWithSprite3DIssue16894);
+    RenderTextureWithSprite3DIssue16894();
+    virtual ~RenderTextureWithSprite3DIssue16894();
+
+    virtual void visit(cocos2d::Renderer *renderer, const cocos2d::Mat4& parentTransform, uint32_t parentFlags) override;
+
+    virtual std::string title() const override;
+    virtual std::string subtitle() const override;
+
+private:
+    cocos2d::Sprite3D* _ship[3];
+
+    cocos2d::RenderTexture* _renderTexDefault;
+    cocos2d::RenderTexture* _renderTexWithBuffer;
 };
 
 #endif

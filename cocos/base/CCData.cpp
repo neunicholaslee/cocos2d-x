@@ -1,7 +1,8 @@
 /****************************************************************************
  Copyright (c) 2010-2012 cocos2d-x.org
- Copyright (c) 2013-2014 Chukong Technologies Inc.
- 
+ Copyright (c) 2013-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
+
  http://www.cocos2d-x.org
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,10 +25,7 @@
  ****************************************************************************/
 
 #include "base/CCData.h"
-#include "platform/CCCommon.h"
-#include "base/ccMacros.h"
-
-#include <string>
+#include "base/CCConsole.h"
 
 NS_CC_BEGIN
 
@@ -64,23 +62,31 @@ Data::~Data()
 
 Data& Data::operator= (const Data& other)
 {
-    CCLOGINFO("In the copy assignment of Data.");
-    copy(other._bytes, other._size);
+    if (this != &other)
+    {
+        CCLOGINFO("In the copy assignment of Data.");
+        copy(other._bytes, other._size);
+    }
     return *this;
 }
 
 Data& Data::operator= (Data&& other)
 {
-    CCLOGINFO("In the move assignment of Data.");
-    move(other);
+    if (this != &other)
+    {
+        CCLOGINFO("In the move assignment of Data.");
+        move(other);
+    }
     return *this;
 }
 
 void Data::move(Data& other)
 {
+    clear();
+    
     _bytes = other._bytes;
     _size = other._size;
-    
+
     other._bytes = nullptr;
     other._size = 0;
 }
@@ -100,10 +106,10 @@ ssize_t Data::getSize() const
     return _size;
 }
 
-void Data::copy(unsigned char* bytes, const ssize_t size)
+void Data::copy(const unsigned char* bytes, const ssize_t size)
 {
     clear();
-    
+
     if (size > 0)
     {
         _size = size;
@@ -123,6 +129,15 @@ void Data::clear()
     free(_bytes);
     _bytes = nullptr;
     _size = 0;
+}
+
+unsigned char* Data::takeBuffer(ssize_t* size)
+{
+    auto buffer = getBytes();
+    if (size)
+        *size = getSize();
+    fastSet(nullptr, 0);
+    return buffer;
 }
 
 NS_CC_END

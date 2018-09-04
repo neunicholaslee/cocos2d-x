@@ -1,252 +1,144 @@
-cmake_minimum_required(VERSION 2.6)
+#/****************************************************************************
+# Copyright (c) 2013-2014 cocos2d-x.org
+# Copyright (c) 2015-2017 Chukong Technologies Inc.
+#
+# http://www.cocos2d-x.org
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
 
-set(APP_NAME MyGame)
-project (${APP_NAME})
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
 
-include(cocos2d/build/BuildHelpers.CMakeLists.txt)
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+# ****************************************************************************/
 
-option(USE_CHIPMUNK "Use chipmunk for physics library" ON)
-option(USE_BOX2D "Use box2d for physics library" OFF)
-option(DEBUG_MODE "Debug or release?" ON)
+cmake_minimum_required(VERSION 3.1)
 
-if(DEBUG_MODE)
-  set(CMAKE_BUILD_TYPE DEBUG)
-else(DEBUG_MODE)
-  set(CMAKE_BUILD_TYPE RELEASE)
-endif(DEBUG_MODE)
+set(APP_NAME TemplateCpp)
 
-if (MSVC)
-	set(CMAKE_C_FLAGS_DEBUG "-DCOCOS2D_DEBUG=1")
-	set(CMAKE_CXX_FLAGS_DEBUG ${CMAKE_C_FLAGS_DEBUG})
+project(${APP_NAME})
 
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_CRT_SECURE_NO_WARNINGS")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_CRT_SECURE_NO_WARNINGS")
+set(COCOS2DX_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cocos2d)
+set(CMAKE_MODULE_PATH ${COCOS2DX_ROOT_PATH}/cmake/Modules/)
 
-elseif (CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
-	set(CMAKE_C_FLAGS_DEBUG "-g -Wall -DCOCOS2D_DEBUG=1")
-	set(CMAKE_CXX_FLAGS_DEBUG ${CMAKE_C_FLAGS_DEBUG})
-
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-
+include(CocosBuildSet)
+if(NOT USE_COCOS_PREBUILT)
+    add_subdirectory(${COCOS2DX_ROOT_PATH}/cocos ${ENGINE_BINARY_PATH}/cocos/core)
 endif()
 
-if(USE_CHIPMUNK)
-  message("Using chipmunk ...")
-  add_definitions(-DCC_ENABLE_CHIPMUNK_INTEGRATION=1)
-  if(UNIX) # assuming linux
-    add_definitions(-DLINUX )
-  endif()
-elseif(USE_BOX2D)
-  message("Using box2d ...")
-  add_definitions(-DCC_ENABLE_BOX2D_INTEGRATION=1)
-  if(UNIX) # assuming linux
-    add_definitions(-DLINUX )
-  endif()
-else(USE_CHIPMUNK)
-  message(FATAL_ERROR "Must choose a physics library.")
-endif(USE_CHIPMUNK)
+# record sources, headers, resources...
+set(GAME_SOURCE)
+set(GAME_HEADER)
 
-# architecture
-if ( CMAKE_SIZEOF_VOID_P EQUAL 8 )
-set(ARCH_DIR "64-bit")
-else()
-set(ARCH_DIR "32-bit")
-endif()
-
-if( UNIX ) #assume linux
-set(GAME_SRC
-  proj.linux/main.cpp
-  Classes/AppDelegate.cpp
-  Classes/HelloWorldScene.cpp
-)
-elseif ( WIN32 )
-set(GAME_SRC
-  proj.win32/main.cpp
-  proj.win32/main.h
-  proj.win32/resource.h
-  Classes/AppDelegate.cpp
-  Classes/HelloWorldScene.cpp
-)
-endif()
-
-set(COCOS2D_ROOT ${CMAKE_SOURCE_DIR}/cocos2d)
-if (WIN32)
-include_directories(
-  ${COCOS2D_ROOT}
-  ${COCOS2D_ROOT}/cocos
-  ${COCOS2D_ROOT}/cocos/audio/include
-  ${COCOS2D_ROOT}/cocos/2d
-  ${COCOS2D_ROOT}/cocos/2d/renderer
-  ${COCOS2D_ROOT}/cocos/2d/platform
-  ${COCOS2D_ROOT}/cocos/2d/platform/desktop
-  ${COCOS2D_ROOT}/cocos/2d/platform/win32
-  ${COCOS2D_ROOT}/cocos/base
-  ${COCOS2D_ROOT}/cocos/deprecated
-  ${COCOS2D_ROOT}/cocos/physics
-  ${COCOS2D_ROOT}/cocos/editor-support
-  ${COCOS2D_ROOT}/cocos/math
-  ${COCOS2D_ROOT}/extensions
-  ${COCOS2D_ROOT}/external
-  ${COCOS2D_ROOT}/external/edtaa3func
-  ${COCOS2D_ROOT}/external/jpeg/include/win32
-  ${COCOS2D_ROOT}/external/png/include/win32
-  ${COCOS2D_ROOT}/external/tiff/include/win32
-  ${COCOS2D_ROOT}/external/webp/include/win32
-  ${COCOS2D_ROOT}/external/curl/include/win32
-  ${COCOS2D_ROOT}/external/tinyxml2
-  ${COCOS2D_ROOT}/external/unzip
-  ${COCOS2D_ROOT}/external/sqlite3/include
-  ${COCOS2D_ROOT}/external/chipmunk/include/chipmunk
-  ${COCOS2D_ROOT}/external/freetype2/include/win32
-  ${COCOS2D_ROOT}/external/websockets/include/win32
-  ${COCOS2D_ROOT}/external/spidermonkey/include/win32
-  ${COCOS2D_ROOT}/external/glfw3/include/win32
-  ${COCOS2D_ROOT}/external/win32-specific/gles/include/OGLES
-  ${COCOS2D_ROOT}/external/win32-specific/icon/include
-  ${COCOS2D_ROOT}/external/win32-specific/zlib/include
-  ${COCOS2D_ROOT}/external/xxhash
-)
-link_directories(
-  /usr/local/lib
-  ${COCOS2D_ROOT}/external/png/prebuilt/win32
-  ${COCOS2D_ROOT}/external/jpeg/prebuilt/win32
-  ${COCOS2D_ROOT}/external/tiff/prebuilt/win32
-  ${COCOS2D_ROOT}/external/glfw3/prebuilt/win32
-  ${COCOS2D_ROOT}/external/webp/prebuilt/win32
-  ${COCOS2D_ROOT}/external/curl/prebuilt/win32
-  ${COCOS2D_ROOT}/external/sqlite3/libraries/win32
-  ${COCOS2D_ROOT}/external/freetype2/prebuilt/win32
-  ${COCOS2D_ROOT}/external/websockets/prebuilt/win32
-  ${COCOS2D_ROOT}/external/spidermonkey/prebuilt/win32
-  ${COCOS2D_ROOT}/external/win32-specific/gles/prebuilt
-  ${COCOS2D_ROOT}/external/win32-specific/icon/prebuilt
-  ${COCOS2D_ROOT}/external/win32-specific/zlib/prebuilt
-)
-
-elseif(UNIX) #assumed linux
-include_directories(
-  /usr/local/include/GLFW
-  ${COCOS2D_ROOT}
-  ${COCOS2D_ROOT}/cocos
-  ${COCOS2D_ROOT}/cocos/audio/include
-  ${COCOS2D_ROOT}/cocos/platform
-  ${COCOS2D_ROOT}/cocos/platform/desktop
-  ${COCOS2D_ROOT}/cocos/platform/linux
-  ${COCOS2D_ROOT}/cocos/editor-support
-  ${COCOS2D_ROOT}/extensions
-  ${COCOS2D_ROOT}/external
-  ${COCOS2D_ROOT}/external/edtaa3func
-  ${COCOS2D_ROOT}/external/jpeg/include/linux
-  ${COCOS2D_ROOT}/external/tiff/include/linux
-  ${COCOS2D_ROOT}/external/webp/include/linux
-  ${COCOS2D_ROOT}/external/tinyxml2
-  ${COCOS2D_ROOT}/external/unzip
-  ${COCOS2D_ROOT}/external/freetype2/include/linux
-  ${COCOS2D_ROOT}/external/websockets/include/linux
-  ${COCOS2D_ROOT}/external/spidermonkey/include/linux
-  ${COCOS2D_ROOT}/external/linux-specific/fmod/include/${ARCH_DIR}
-  ${COCOS2D_ROOT}/external/xxhash
-)
-
-link_directories(
-  /usr/local/lib
-  ${COCOS2D_ROOT}/external/jpeg/prebuilt/linux/${ARCH_DIR}
-  ${COCOS2D_ROOT}/external/tiff/prebuilt/linux/${ARCH_DIR}
-  ${COCOS2D_ROOT}/external/webp/prebuilt/linux/${ARCH_DIR}
-  ${COCOS2D_ROOT}/external/freetype2/prebuilt/linux/${ARCH_DIR}
-  ${COCOS2D_ROOT}/external/websockets/prebuilt/linux/${ARCH_DIR}
-  ${COCOS2D_ROOT}/external/spidermonkey/prebuilt/linux/${ARCH_DIR}
-  ${COCOS2D_ROOT}/external/linux-specific/fmod/prebuilt/${ARCH_DIR}
-)
-endif()
-
-if(USE_CHIPMUNK)
-
-	include_directories(${COCOS2D_ROOT}/external/chipmunk/include/chipmunk)
-	# chipmunk library
-	add_subdirectory(${COCOS2D_ROOT}/external/chipmunk/src)
-endif()
-
-if(USE_BOX2D)
-	# box2d library
-	add_subdirectory(${COCOS2D_ROOT}/external/Box2D)
-endif()
-
-# unzip library
-add_subdirectory(${COCOS2D_ROOT}/external/unzip)
-
-# tinyxml2 library
-add_subdirectory(${COCOS2D_ROOT}/external/tinyxml2)
-
-# audio
-add_subdirectory(${COCOS2D_ROOT}/cocos/audio)
-
-# xxhash library
-add_subdirectory(${COCOS2D_ROOT}/external/xxhash)
-
-# cocos2d
-add_subdirectory(${COCOS2D_ROOT}/cocos)
-
-# extensions
-add_subdirectory(${COCOS2D_ROOT}/extensions)
-
-## Editor Support
-
-# spine
-add_subdirectory(${COCOS2D_ROOT}/cocos/editor-support/spine)
-
-# cocosbuilder
-add_subdirectory(${COCOS2D_ROOT}/cocos/editor-support/cocosbuilder)
-
-# cocostudio
-add_subdirectory(${COCOS2D_ROOT}/cocos/editor-support/cocostudio)
-
-if ( WIN32 )
-	# add the executable
-	add_executable(${APP_NAME}
-	  WIN32
-	  ${GAME_SRC}
-	)
-else()
-	# add the executable
-	add_executable(${APP_NAME}
-	  ${GAME_SRC}
-	)
-endif()
-
-if ( CMAKE_SIZEOF_VOID_P EQUAL 8 )
-set(FMOD_LIB "fmodex64")
-else()
-set(FMOD_LIB "fmodex")
-endif()
-
-target_link_libraries(${APP_NAME}
-  spine
-  cocostudio
-  cocosbuilder
-  extensions
-  audio
-  cocos2d
-  )
-
-set(APP_BIN_DIR "${CMAKE_BINARY_DIR}/bin")
-
-set_target_properties(${APP_NAME} PROPERTIES
-     RUNTIME_OUTPUT_DIRECTORY  "${APP_BIN_DIR}")
-
-if ( WIN32 )
-  #also copying dlls to binary directory for the executable to run
-  pre_build(${APP_NAME}
-    COMMAND ${CMAKE_COMMAND} -E remove_directory ${APP_BIN_DIR}/Resources
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/Resources ${APP_BIN_DIR}/Resources
-    COMMAND ${CMAKE_COMMAND} -E copy ${COCOS2D_ROOT}/external/win32-specific/gles/prebuilt/glew32.dll ${APP_BIN_DIR}/${CMAKE_BUILD_TYPE}
-	COMMAND ${CMAKE_COMMAND} -E copy ${COCOS2D_ROOT}/external/win32-specific/zlib/prebuilt/zlib1.dll ${APP_BIN_DIR}/${CMAKE_BUILD_TYPE}
-	)
-else()
-  pre_build(${APP_NAME}
-    COMMAND ${CMAKE_COMMAND} -E remove_directory ${APP_BIN_DIR}/Resources
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/Resources ${APP_BIN_DIR}/Resources
+set(GAME_RES_FOLDER
+    "${CMAKE_CURRENT_SOURCE_DIR}/Resources"
     )
+if(APPLE OR WINDOWS)
+    cocos_mark_multi_resources(common_res_files RES_TO "Resources" FOLDERS ${GAME_RES_FOLDER})
+endif()
 
+include_directories(
+        Classes
+        ${COCOS2DX_ROOT_PATH}/cocos/audio/include/
+)
+# add cross-platforms source files and header files 
+list(APPEND GAME_SOURCE
+     Classes/AppDelegate.cpp
+     Classes/HelloWorldScene.cpp
+     )
+list(APPEND GAME_HEADER
+     Classes/AppDelegate.h
+     Classes/HelloWorldScene.h
+     )
+
+if(ANDROID)
+    # change APP_NAME to the share library name for Android, it's value depend on AndroidManifest.xml
+    set(APP_NAME MyGame)
+    list(APPEND GAME_SOURCE
+         proj.android/app/jni/hellocpp/main.cpp
+         )
+elseif(LINUX)
+    list(APPEND GAME_SOURCE
+         proj.linux/main.cpp
+         )
+elseif(WINDOWS)
+    list(APPEND GAME_HEADER
+         proj.win32/main.h
+         proj.win32/resource.h
+         )
+    list(APPEND GAME_SOURCE
+         proj.win32/main.cpp
+         proj.win32/game.rc
+         ${common_res_files}
+         )
+elseif(APPLE)
+    if(IOS)
+        list(APPEND GAME_HEADER
+             proj.ios_mac/ios/AppController.h
+             proj.ios_mac/ios/RootViewController.h
+             )
+        set(APP_UI_RES
+            proj.ios_mac/ios/LaunchScreen.storyboard
+            proj.ios_mac/ios/LaunchScreenBackground.png
+            proj.ios_mac/ios/Images.xcassets
+            )
+        list(APPEND GAME_SOURCE
+             proj.ios_mac/ios/main.m
+             proj.ios_mac/ios/AppController.mm
+             proj.ios_mac/ios/RootViewController.mm
+             proj.ios_mac/ios/Prefix.pch
+             ${APP_UI_RES}
+             )
+    elseif(MACOSX)
+        set(APP_UI_RES
+            proj.ios_mac/mac/Icon.icns
+            proj.ios_mac/mac/Info.plist
+            )
+        list(APPEND GAME_SOURCE
+             proj.ios_mac/mac/main.cpp
+             proj.ios_mac/mac/Prefix.pch
+             ${APP_UI_RES}
+             )
+    endif()
+    list(APPEND GAME_SOURCE ${common_res_files})
+endif()
+
+# mark app complie info and libs info
+set(APP_SRC
+    ${GAME_SOURCE}
+    ${GAME_HEADER}
+    )
+cocos_build_app(${APP_NAME}
+                APP_SRC "${APP_SRC}"
+                DEPEND_COMMON_LIBS "cocos2d"
+                DEPEND_ANDROID_LIBS "cocos2d_android"
+                )
+
+if(APPLE)
+    set_target_properties(${APP_NAME} PROPERTIES RESOURCE "${APP_UI_RES}")
+    if(MACOSX)
+        set_target_properties(${APP_NAME} PROPERTIES
+                              MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/proj.ios_mac/mac/Info.plist"
+                              )
+    elseif(IOS)
+        cocos_pak_xcode(${APP_NAME} INFO_PLIST "iOSBundleInfo.plist.in")
+        set_xcode_property(${APP_NAME} ASSETCATALOG_COMPILER_APPICON_NAME "AppIcon")
+    endif()
+elseif(WINDOWS)
+    cocos_copy_target_dll(${APP_NAME} COPY_TO ${APP_RES_DIR})
+endif()
+
+if(LINUX OR WINDOWS)
+    cocos_copy_res(COPY_TO ${APP_RES_DIR} FOLDERS ${GAME_RES_FOLDER})
 endif()

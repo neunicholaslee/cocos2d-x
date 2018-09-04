@@ -1,6 +1,7 @@
 /****************************************************************************
  Copyright (c) 2013      cocos2d-x.org
- Copyright (c) 2013-2014 Chukong Technologies Inc.
+ Copyright (c) 2013-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
  http://www.cocos2d-x.org
 
@@ -25,7 +26,7 @@
 
 #import "testsAppDelegate.h"
 
-#import "CCEAGLView.h"
+#import "platform/ios/CCEAGLView-ios.h"
 #import "cocos2d.h"
 #import "AppDelegate.h"
 #import "RootViewController.h"
@@ -42,26 +43,32 @@ static AppDelegate s_sharedApplication;
 {
 
     cocos2d::Application *app = cocos2d::Application::getInstance();
+    app->initGLContextAttrs();
+    cocos2d::GLViewImpl::convertAttrs();
 
     // Override point for customization after application launch.
 
     // Add the view controller's view to the window and display.
     window = [[UIWindow alloc] initWithFrame: [[UIScreen mainScreen] bounds]];
-    
+
     // Init the CCEAGLView
     CCEAGLView *eaglView = [CCEAGLView viewWithFrame: [window bounds]
-                                         pixelFormat: kEAGLColorFormatRGBA8
-                                         depthFormat: GL_DEPTH24_STENCIL8_OES
+                                         pixelFormat: (NSString*)cocos2d::GLViewImpl::_pixelFormat
+                                         depthFormat: cocos2d::GLViewImpl::_depthFormat
                                   preserveBackbuffer: NO
                                           sharegroup: nil
-                                       multiSampling: NO
-                                     numberOfSamples: 0 ];
+                                       multiSampling: cocos2d::GLViewImpl::_multisamplingCount > 0 ? YES : NO
+                                     numberOfSamples: cocos2d::GLViewImpl::_multisamplingCount ];
 
+#if !defined(CC_TARGET_OS_TVOS)
     [eaglView setMultipleTouchEnabled:YES];
+#endif
 
-    // Use RootViewController manage CCEAGLView 
+    // Use RootViewController manage CCEAGLView
     viewController = [[RootViewController alloc] initWithNibName:nil bundle:nil];
+#if !defined(CC_TARGET_OS_TVOS)
     viewController.wantsFullScreenLayout = YES;
+#endif
     viewController.view = eaglView;
 
     // Set RootViewController to window
@@ -77,11 +84,13 @@ static AppDelegate s_sharedApplication;
     }
     
     [window makeKeyAndVisible];
-    
-    [[UIApplication sharedApplication] setStatusBarHidden:true];
 
+#if !defined(CC_TARGET_OS_TVOS)
+    [[UIApplication sharedApplication] setStatusBarHidden:true];
+#endif
+    
     // IMPORTANT: Setting the GLView should be done after creating the RootViewController
-    cocos2d::GLView *glview = cocos2d::GLView::createWithEAGLView(eaglView);
+    cocos2d::GLView *glview = cocos2d::GLViewImpl::createWithEAGLView(eaglView);
     cocos2d::Director::getInstance()->setOpenGLView(glview);
 
     app->run();
@@ -95,7 +104,7 @@ static AppDelegate s_sharedApplication;
      Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
      Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
      */
-    //We don't need to call this method any more. It will interupt user defined game pause&resume logic
+    //We don't need to call this method any more. It will interrupt user defined game pause&resume logic
 //    cocos2d::Director::getInstance()->pause();
 }
 
@@ -103,7 +112,7 @@ static AppDelegate s_sharedApplication;
     /*
      Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
      */
-    //We don't need to call this method any more. It will interupt user defined game pause&resume logic
+    //We don't need to call this method any more. It will interrupt user defined game pause&resume logic
 //    cocos2d::Director::getInstance()->resume();
 }
 

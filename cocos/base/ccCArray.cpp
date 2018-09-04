@@ -1,7 +1,8 @@
 /****************************************************************************
 Copyright (c) 2007      Scott Lembcke
 Copyright (c) 2010-2012 cocos2d-x.org
-CopyRight (c) 2013-2014 Chukong Technologies Inc.
+Copyright (c) 2013-2016 Chukong Technologies Inc.
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
 http://www.cocos2d-x.org
 
@@ -25,7 +26,6 @@ THE SOFTWARE.
 ****************************************************************************/
 
 #include "base/ccCArray.h"
-#include "base/CCRef.h"
 #include "base/ccTypes.h"
 
 NS_CC_BEGIN

@@ -1,5 +1,6 @@
 /****************************************************************************
  Copyright (c) 2013 cocos2d-x.org
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -27,22 +28,58 @@
 
 #include "../UIScene.h"
 
+DEFINE_TEST_SUITE(UIImageViewTests);
+
 class UIImageViewTest : public UIScene
 {
 public:
-    bool init();
-    
+    CREATE_FUNC(UIImageViewTest);
+
+    virtual bool init() override;
+
+    void printWidgetResources(cocos2d::Ref* sender);
 protected:
-    UI_SCENE_CREATE_FUNC(UIImageViewTest)
+    cocos2d::ui::ImageView* _image;
 };
 
 class UIImageViewTest_Scale9 : public UIScene
 {
-public:    
-    bool init();
+public:
+    CREATE_FUNC(UIImageViewTest_Scale9);
+
+    virtual bool init() override;
+};
+
+class UIImageViewTest_Scale9_State_Change : public UIScene
+{
+public:
+    CREATE_FUNC(UIImageViewTest_Scale9_State_Change);
+
+    virtual bool init() override;
+};
+
+class UIImageViewTest_ContentSize : public UIScene
+{
+public:
+    CREATE_FUNC(UIImageViewTest_ContentSize);
+
+    virtual bool init() override;
+};
+
+class UIImageViewFlipTest : public UIScene
+{
+public:
+    CREATE_FUNC(UIImageViewFlipTest);
+
+    virtual bool init() override;
+};
+
+class UIImageViewIssue12249Test : public UIScene
+{
+public:
+    CREATE_FUNC(UIImageViewIssue12249Test);
     
-protected:
-    UI_SCENE_CREATE_FUNC(UIImageViewTest_Scale9)
+    virtual bool init() override;
 };
 
 #endif /* defined(__TestCpp__UIImageViewTest__) */

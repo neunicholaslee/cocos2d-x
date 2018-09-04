@@ -1,11 +1,33 @@
-#include "CCBAnimationManager.h"
-#include "CCBSequence.h"
-#include "CCBSequenceProperty.h"
-#include "CCBReader.h"
-#include "CCBKeyframe.h"
-#include "CCNode+CCBRelativePositioning.h"
+/****************************************************************************
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
+ 
+ http://www.cocos2d-x.org
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ 
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE.
+ ****************************************************************************/
+
+#include "editor-support/cocosbuilder/CCBAnimationManager.h"
+
+#include "editor-support/cocosbuilder/CCBReader.h"
+#include "editor-support/cocosbuilder/CCNode+CCBRelativePositioning.h"
 #include "audio/include/SimpleAudioEngine.h"
-#include "CCBSelectorResolver.h"
+#include "editor-support/cocosbuilder/CCBSelectorResolver.h"
 
 #include <string>
 #include <sstream>
@@ -426,7 +448,7 @@ void CCBAnimationManager::setAnimatedProperty(const std::string& propName, Node 
     if (fTweenDuration > 0)
     {
         // Create a fake keyframe to generate the action from
-        CCBKeyframe *kf1 = new CCBKeyframe();
+        CCBKeyframe *kf1 = new (std::nothrow) CCBKeyframe();
         kf1->autorelease();
         
         kf1->setObject(obj);
@@ -481,7 +503,7 @@ void CCBAnimationManager::setAnimatedProperty(const std::string& propName, Node 
         {
             // [node setValue:value forKey:name];
 
-            // TODO only handle rotation, opacity, displayFrame, color
+            // TODO: only handle rotation, opacity, displayFrame, color
             if (propName == "rotation")
             {
                 float rotate = value.asFloat();
@@ -611,7 +633,7 @@ ActionInterval* CCBAnimationManager::getEaseAction(ActionInterval *pAction, CCBK
     }
     else
     {
-        log("CCBReader: Unkown easing type %d", easingType);
+        log("CCBReader: Unknown easing type %d", static_cast<int>(easingType));
         return pAction;
     }
 }
@@ -665,7 +687,7 @@ Sequence*  CCBAnimationManager::actionForCallbackChannel(CCBSequenceProperty* ch
             
             if(target != nullptr)
             {
-                if(selectorName.length() > 0)
+                if(!selectorName.empty())
                 {
                     SEL_CallFuncN selCallFunc = 0;
                     
@@ -726,7 +748,7 @@ Sequence*  CCBAnimationManager::actionForSoundChannel(CCBSequenceProperty* chann
         auto& keyVal = keyframe->getValue().asValueVector();
         std::string soundFile = keyVal[0].asString();
     
-        float pitch, pan, gain;
+        float pitch = 0.0f, pan = 0.0f, gain = 0.0f;
         ss << keyVal[1].asString();
         ss >> pitch;
         ss.flush();
@@ -957,7 +979,7 @@ void CCBAnimationManager::sequenceCompleted()
 
 CCBSetSpriteFrame* CCBSetSpriteFrame::create(SpriteFrame *pSpriteFrame)
 {
-    CCBSetSpriteFrame *ret = new CCBSetSpriteFrame();
+    CCBSetSpriteFrame *ret = new (std::nothrow) CCBSetSpriteFrame();
     if (ret)
     {
         if (ret->initWithSpriteFrame(pSpriteFrame))
@@ -989,7 +1011,7 @@ CCBSetSpriteFrame::~CCBSetSpriteFrame()
 CCBSetSpriteFrame* CCBSetSpriteFrame::clone() const
 {
 	// no copy constructor
-	auto a = new CCBSetSpriteFrame();
+	auto a = new (std::nothrow) CCBSetSpriteFrame();
     a->initWithSpriteFrame(_spriteFrame);
 	a->autorelease();
 	return a;
@@ -1001,7 +1023,7 @@ CCBSetSpriteFrame* CCBSetSpriteFrame::reverse() const
 	return this->clone();
 }
 
-void CCBSetSpriteFrame::update(float time)
+void CCBSetSpriteFrame::update(float /*time*/)
 {
     static_cast<Sprite*>(_target)->setSpriteFrame(_spriteFrame);
 }
@@ -1012,7 +1034,7 @@ void CCBSetSpriteFrame::update(float time)
  ************************************************************/
 
 CCBSoundEffect* CCBSoundEffect::actionWithSoundFile(const std::string &filename, float pitch, float pan, float gain) {
-  CCBSoundEffect* pRet = new CCBSoundEffect();
+  CCBSoundEffect* pRet = new (std::nothrow) CCBSoundEffect();
   if (pRet != nullptr && pRet->initWithSoundFile(filename, pitch, pan, gain))
     {
       pRet->autorelease();
@@ -1040,7 +1062,7 @@ bool CCBSoundEffect::initWithSoundFile(const std::string &filename, float pitch,
 CCBSoundEffect* CCBSoundEffect::clone() const
 {
 	// no copy constructor
-	auto a = new CCBSoundEffect();
+	auto a = new (std::nothrow) CCBSoundEffect();
     a->initWithSoundFile(_soundFile, _pitch, _pan, _gain);
 	a->autorelease();
 	return a;
@@ -1052,7 +1074,7 @@ CCBSoundEffect* CCBSoundEffect::reverse() const
 	return this->clone();
 }
 
-void CCBSoundEffect::update(float time)
+void CCBSoundEffect::update(float /*time*/)
 {
     CocosDenshion::SimpleAudioEngine::getInstance()->playEffect(_soundFile.c_str());
 }
@@ -1064,7 +1086,7 @@ void CCBSoundEffect::update(float time)
 
 CCBRotateTo* CCBRotateTo::create(float fDuration, float fAngle)
 {
-    CCBRotateTo *ret = new CCBRotateTo();
+    CCBRotateTo *ret = new (std::nothrow) CCBRotateTo();
     if (ret)
     {
         if (ret->initWithDuration(fDuration, fAngle))
@@ -1097,7 +1119,7 @@ bool CCBRotateTo::initWithDuration(float fDuration, float fAngle)
 CCBRotateTo* CCBRotateTo::clone() const
 {
 	// no copy constructor	
-	auto a = new CCBRotateTo();
+	auto a = new (std::nothrow) CCBRotateTo();
     a->initWithDuration(_duration, _dstAngle);
 	a->autorelease();
 	return a;
@@ -1132,7 +1154,7 @@ void CCBRotateTo::update(float time)
 
 CCBRotateXTo* CCBRotateXTo::create(float fDuration, float fAngle)
 {
-    CCBRotateXTo *ret = new CCBRotateXTo();
+    CCBRotateXTo *ret = new (std::nothrow) CCBRotateXTo();
     if (ret)
     {
         if (ret->initWithDuration(fDuration, fAngle))
@@ -1177,7 +1199,7 @@ void CCBRotateXTo::startWithTarget(Node *pNode)
 CCBRotateXTo* CCBRotateXTo::clone() const
 {
 	// no copy constructor
-	auto a = new CCBRotateXTo();
+	auto a = new (std::nothrow) CCBRotateXTo();
     a->initWithDuration(_duration, _dstAngle);
 	a->autorelease();
 	return a;
@@ -1204,7 +1226,7 @@ void CCBRotateXTo::update(float time)
 
 CCBRotateYTo* CCBRotateYTo::create(float fDuration, float fAngle)
 {
-    CCBRotateYTo *ret = new CCBRotateYTo();
+    CCBRotateYTo *ret = new (std::nothrow) CCBRotateYTo();
     if (ret)
     {
         if (ret->initWithDuration(fDuration, fAngle))
@@ -1237,7 +1259,7 @@ bool CCBRotateYTo::initWithDuration(float fDuration, float fAngle)
 CCBRotateYTo* CCBRotateYTo::clone() const
 {
 	// no copy constructor
-	auto a = new CCBRotateYTo();
+	auto a = new (std::nothrow) CCBRotateYTo();
     a->initWithDuration(_duration, _dstAngle);
 	a->autorelease();
 	return a;
@@ -1273,7 +1295,7 @@ void CCBRotateYTo::update(float time)
  ************************************************************/
 CCBEaseInstant* CCBEaseInstant::create(ActionInterval *pAction)
 {
-    CCBEaseInstant *pRet = new CCBEaseInstant();
+    CCBEaseInstant *pRet = new (std::nothrow) CCBEaseInstant();
     if (pRet && pRet->initWithAction(pAction))
     {
         pRet->autorelease();
@@ -1289,7 +1311,7 @@ CCBEaseInstant* CCBEaseInstant::create(ActionInterval *pAction)
 CCBEaseInstant* CCBEaseInstant::clone() const
 {
 	// no copy constructor	
-	auto a = new CCBEaseInstant();
+	auto a = new (std::nothrow) CCBEaseInstant();
     a->initWithAction(_inner);
 	a->autorelease();
 	return a;

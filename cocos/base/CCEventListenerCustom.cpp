@@ -1,5 +1,6 @@
 /****************************************************************************
- Copyright (c) 2013-2014 Chukong Technologies Inc.
+ Copyright (c) 2013-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -34,7 +35,7 @@ EventListenerCustom::EventListenerCustom()
 
 EventListenerCustom* EventListenerCustom::create(const std::string& eventName, const std::function<void(EventCustom*)>& callback)
 {
-    EventListenerCustom* ret = new EventListenerCustom();
+    EventListenerCustom* ret = new (std::nothrow) EventListenerCustom();
     if (ret && ret->init(eventName, callback))
     {
         ret->autorelease();
@@ -68,7 +69,7 @@ bool EventListenerCustom::init(const ListenerID& listenerId, const std::function
 
 EventListenerCustom* EventListenerCustom::clone()
 {
-    EventListenerCustom* ret = new EventListenerCustom();
+    EventListenerCustom* ret = new (std::nothrow) EventListenerCustom();
     if (ret && ret->init(_listenerID, _onCustomEvent))
     {
         ret->autorelease();

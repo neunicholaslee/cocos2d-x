@@ -1,5 +1,6 @@
 /****************************************************************************
  Copyright (c) 2013 cocos2d-x.org
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -27,17 +28,50 @@
 
 #include "../UIScene.h"
 
+DEFINE_TEST_SUITE(UICheckBoxTests);
+
 class UICheckBoxTest : public UIScene
 {
 public:
+    CREATE_FUNC(UICheckBoxTest);
+
     UICheckBoxTest();
     ~UICheckBoxTest();
-    bool init();
-    void selectedEvent(Ref* pSender,CheckBox::EventType type);
+
+    virtual bool init() override;
+    void selectedEvent(cocos2d::Ref* sender,cocos2d::ui::CheckBox::EventType type);
     
+    void printWidgetResources(cocos2d::Ref* sender);
 protected:
-    UI_SCENE_CREATE_FUNC(UICheckBoxTest)
-    Text* _displayValueLabel;
+    cocos2d::ui::Text* _displayValueLabel;
+    cocos2d::ui::CheckBox* _checkBox;
 };
 
+class UICheckBoxDefaultBehaviorTest : public UIScene
+{
+public:
+    CREATE_FUNC(UICheckBoxDefaultBehaviorTest);
+
+    UICheckBoxDefaultBehaviorTest();
+    ~UICheckBoxDefaultBehaviorTest();
+
+    virtual bool init() override;
+    
+protected:
+    cocos2d::ui::Text* _displayValueLabel;
+};
+
+class UICheckBoxCopyTest : public UIScene
+{
+public:
+    CREATE_FUNC(UICheckBoxCopyTest);
+
+    UICheckBoxCopyTest();
+    ~UICheckBoxCopyTest();
+
+    virtual bool init() override;
+
+protected:
+    cocos2d::ui::Text* _displayValueLabel;
+};
 #endif /* defined(__TestCpp__UICheckBoxTest__) */

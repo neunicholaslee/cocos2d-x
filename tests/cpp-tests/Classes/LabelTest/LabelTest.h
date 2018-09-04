@@ -1,7 +1,30 @@
+/****************************************************************************
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
+ 
+ http://www.cocos2d-x.org
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ 
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE.
+ ****************************************************************************/
+
 #ifndef _ATLAS_TEST_H_
 #define _ATLAS_TEST_H_
 
-#include "../testBasic.h"
 #include "../BaseTest.h"
 
 #if defined(__GNUC__) && ((__GNUC__ >= 4) || ((__GNUC__ == 3) && (__GNUC_MINOR__ >= 1)))
@@ -11,29 +34,17 @@
 #pragma warning (disable: 4996)
 #endif
 
-class AtlasDemo : public BaseTest
+DEFINE_TEST_SUITE(LabelTests);
+
+class AtlasDemo : public TestCase
 {
-protected:
-
 public:
-    CREATE_FUNC(AtlasDemo);
-
-    AtlasDemo(void);
-    ~AtlasDemo(void);
-
-    virtual std::string title() const override;
-    virtual std::string subtitle() const override;
-    virtual void onEnter() override;
-
-    void restartCallback(Ref* sender);
-    void nextCallback(Ref* sender);
-    void backCallback(Ref* sender);
 };
 
 
 class Atlas1 : public AtlasDemo
 {
-    TextureAtlas*        _textureAtlas;
+    cocos2d::TextureAtlas*        _textureAtlas;
 public:
     CREATE_FUNC(Atlas1);
 
@@ -41,11 +52,11 @@ public:
     ~Atlas1();
     virtual std::string title() const override;
     virtual std::string subtitle() const override;
-    virtual void draw(Renderer *renderer, const Mat4 &transform, uint32_t flags) override;
+    virtual void draw(cocos2d::Renderer* renderer, const cocos2d::Mat4& transform, uint32_t flags) override;
 protected:
-    void onDraw(const Mat4 &transform, uint32_t flags);
+    void onDraw(const cocos2d::Mat4& transform, uint32_t flags);
 protected:
-    CustomCommand _customCommand;
+    cocos2d::CustomCommand _customCommand;
 };
 
 class LabelAtlasTest : public AtlasDemo
@@ -108,14 +119,9 @@ public:
 
     Atlas4();
     virtual void step(float dt);
-    virtual void draw(Renderer *renderer, const Mat4 &transform, uint32_t flags) override;
 
     virtual std::string title() const override;
     virtual std::string subtitle() const override;
-protected:
-    void onDraw(const Mat4 &transform, uint32_t flags);
-protected:
-    CustomCommand _customCommand;
 };
 
 class Atlas5 : public AtlasDemo
@@ -214,14 +220,6 @@ public:
     virtual std::string subtitle() const override;
 };
 
-class AtlasTestScene : public TestScene
-{
-public:
-    CREATE_FUNC(AtlasTestScene);
-
-    virtual void runThisTest();
-};
-
 class LabelTTFTest : public AtlasDemo
 {
 public:
@@ -232,18 +230,18 @@ public:
     virtual std::string title() const override;
     virtual std::string subtitle() const override;
 private:
-    void  setAlignmentLeft(Ref* sender);
-    void  setAlignmentCenter(Ref* sender);
-    void  setAlignmentRight(Ref* sender);
-    void  setAlignmentTop(Ref* sender);
-    void  setAlignmentMiddle(Ref* sender);
-    void  setAlignmentBottom(Ref* sender);
+    void  setAlignmentLeft(cocos2d::Ref* sender);
+    void  setAlignmentCenter(cocos2d::Ref* sender);
+    void  setAlignmentRight(cocos2d::Ref* sender);
+    void  setAlignmentTop(cocos2d::Ref* sender);
+    void  setAlignmentMiddle(cocos2d::Ref* sender);
+    void  setAlignmentBottom(cocos2d::Ref* sender);
     void  updateAlignment();
     const char* getCurrentAlignment();
 private:
-    TextHAlignment _horizAlign;
-    LabelTTF* _label;
-    TextVAlignment _vertAlign;
+    cocos2d::TextHAlignment _horizAlign;
+    cocos2d::LabelTTF* _label;
+    cocos2d::TextVAlignment _vertAlign;
 };
 
 class LabelTTFMultiline : public AtlasDemo
@@ -284,26 +282,26 @@ public:
     void snapArrowsToEdge();
     virtual std::string title() const override;
     virtual std::string subtitle() const override;
-    void stringChanged(Ref *sender);
-    void alignmentChanged(Ref *sender);
-    void onTouchesBegan(const std::vector<Touch*>& touches, Event  *event);
-    void onTouchesEnded(const std::vector<Touch*>& touches, Event  *event);
-    void onTouchesMoved(const std::vector<Touch*>& touches, Event  *event);
+    void stringChanged(cocos2d::Ref* sender);
+    void alignmentChanged(cocos2d::Ref* sender);
+    void onTouchesBegan(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event* event);
+    void onTouchesEnded(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event* event);
+    void onTouchesMoved(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event* event);
 
 public:
-    LabelBMFont *_labelShouldRetain;
-    Sprite *_arrowsBarShouldRetain;
-    Sprite *_arrowsShouldRetain;
-    MenuItemFont *_lastSentenceItem, *_lastAlignmentItem;
+    cocos2d::LabelBMFont* _labelShouldRetain;
+    cocos2d::Sprite* _arrowsBarShouldRetain;
+    cocos2d::Sprite* _arrowsShouldRetain;
+    cocos2d::MenuItemFont *_lastSentenceItem, *_lastAlignmentItem;
     bool _drag;
 };
 
-class LabelTTFA8Test : public AtlasDemo
+class LabelTTFOpacityTest : public AtlasDemo
 {
 public:
-    CREATE_FUNC(LabelTTFA8Test);
+    CREATE_FUNC(LabelTTFOpacityTest);
 
-    LabelTTFA8Test();
+    LabelTTFOpacityTest();
 
     virtual std::string title() const override;
     virtual std::string subtitle() const override;
@@ -383,14 +381,8 @@ public:
 
     LabelBMFontBounds();
     
-    virtual void draw(Renderer *renderer, const Mat4 &transform, uint32_t flags) override;
     virtual std::string title() const override;
     virtual std::string subtitle() const override;
-protected:
-    void onDraw(const Mat4 &transform, uint32_t flags);
-private:
-    LabelBMFont *label1;
-    CustomCommand _customCommand;
 };
 
 class NewLabelTTFUnicode : public AtlasDemo

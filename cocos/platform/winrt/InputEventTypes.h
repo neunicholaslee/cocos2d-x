@@ -1,6 +1,7 @@
 /****************************************************************************
 Copyright (c) 2013 cocos2d-x.org
 Copyright (c) Microsoft Open Technologies, Inc.
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
 http://www.cocos2d-x.org
 
@@ -27,18 +28,10 @@ THE SOFTWARE.
 #define __INPUT_EVENT_TYPES__
 
 
-namespace PhoneDirect3DXamlAppComponent
-{
-
-public enum class Cocos2dEvent
-{
-    ShowKeyboard,
-    HideKeyboard,
-    TerminateApp
-};
+NS_CC_BEGIN
 
 
-public enum class Cocos2dKeyEvent : int 
+enum class Cocos2dKeyEvent : int 
 {
     Text,
     Escape,
@@ -46,7 +39,8 @@ public enum class Cocos2dKeyEvent : int
     Enter
 };
 
-}
+NS_CC_END
+
 
 #endif // #ifndef __INPUT_EVENT_TYPES__
 
